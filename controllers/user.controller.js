@@ -46,7 +46,7 @@ module.exports.login = (req,res) => {
         .then(user => {
             console.log('User found',user);
             if (user === null){
-                res.json(false);
+                return res.status(404).json({success: false, token: null, error: "Nom d'utilisateur invalide."});
             }
 
             if (bcrypt.compareSync(req.body.password,user.password)){
@@ -73,7 +73,7 @@ module.exports.login = (req,res) => {
                 console.log('Error password');
                 res
                     .status(401)
-                    .json({success: false, token: null, err: "Entered Password and Hash do not match!"})
+                    .json({success: false, token: null, error: "Mot de passe invalide."})
             }
         })
 }

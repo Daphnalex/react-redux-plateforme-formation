@@ -11,7 +11,7 @@ const RessourceSchema = new Schema({
         ref: "User"
     },
     shareRessource: {
-        type: Bool,
+        type: Boolean,
         required: true,
         default: false
     },

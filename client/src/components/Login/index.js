@@ -5,7 +5,7 @@ import Logo from './img/logo-formation-diplomante.png';
 import "./style.css";
 
 import { connect } from "react-redux";
-import { loginUser } from '../../actions/userActions';
+import { loginUser, editInputUser } from '../../actions/userActions';
 
 class Login extends Component {
     constructor(props){
@@ -23,6 +23,7 @@ class Login extends Component {
 
     handleChange = event => {
         event.preventDefault();
+        this.props.editInputUser();
         this.setState({
             [event.target.id]: event.target.value
         });
@@ -47,7 +48,10 @@ class Login extends Component {
                         </Col>
                         <Col s={12}>
                             <Col s={1}></Col>
-                            <Input s={10} id="password" label="Mot de passe" onChange={(event) => this.handleChange(event)}  value={this.state.password} validate type='password'><Icon>vpn_key</Icon></Input>
+                            <Input s={10} id="password" label="Mot de passe" onChange={(event) => this.handleChange(event)}  value={this.state.password} validate type='password'><Icon>vpn_key</Icon></Input><br/>
+                        </Col>
+                        <Col s={12}>
+                            {(this.props.localStorage.error)&&<Row className="error">Nom d'utilisateur ou mot de passe incorrect</Row>}
                         </Col>
                     </Row>
                     <Row className="validateButton">
@@ -71,6 +75,9 @@ const mapDispatchToProps = (dispatch) => {
     return {
         loginUser: (username, password) => {
             dispatch(loginUser(username, password))
+        },
+        editInputUser: () => {
+            dispatch(editInputUser())
         }
     }
 }

@@ -50,7 +50,7 @@
   }
 
 .card.small{
-    height: 500px !important;
+    height: 550px !important;
     padding: 20px;
   }
 
@@ -71,4 +71,11 @@ div.input-field{
 .btn.waves-effect.waves-light:hover{
   background-color: #49c2ff !important;
   color: white !important;
+}
+
+.error {
+  font-size: 14px;
+  font-style: italic;
+  color: red;
+  text-align: center;
 }

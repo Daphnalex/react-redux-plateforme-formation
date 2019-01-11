@@ -2,17 +2,19 @@ import {
     LOGIN_USER_BEGIN,
     LOGIN_USER_SUCCESS,
     LOGIN_USER_FAILURE,
+    LOGIN_EDIT_INPUT,
+    USER_AUTH,
     LOGOUT_USER
 } from "../actions/userActions.js";
 
 const localStorageInitialState = {
-    token_id: localStorage.getItem("token_id"),
+    token: localStorage.getItem("token"),
     loading: false,
-    error: null
+    error: null,
+    authenticate: false
 }
 
 export default function loginUserReducer(state = localStorageInitialState, action){
-    console.log('state',state)
     switch(action.type) {
         case LOGIN_USER_BEGIN:
             return {
@@ -24,21 +26,30 @@ export default function loginUserReducer(state = localStorageInitialState, actio
             return {
                 ...state,
                 loading: false,
-                token_id: action.payload.token
+                token: action.payload.token,
+                authenticate: true
             }
         case LOGIN_USER_FAILURE: 
+            console.log("action failure",action.payload.error)
             return {
                 ...state,
                 loading: false,
                 error: action.payload.error,
-                token_id: null
+                token: null
+            }
+        case LOGIN_EDIT_INPUT: 
+            return {
+                ...state,
+                loading: false,
+                error: null,
+                token: null
             }
         case LOGOUT_USER:
             return {
                 ...state,
                 loading: false,
                 error: null,
-                token_id: null
+                token: null
             }
         default: 
             return state;

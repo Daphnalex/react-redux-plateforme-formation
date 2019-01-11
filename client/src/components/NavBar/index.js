@@ -11,7 +11,7 @@ class NavBar extends Component {
         return (
             <div>
                 <Navbar brand='Portail de formation' right>
-                    {(this.props.localStorage.token_id !== null) &&
+                    {(this.props.localStorage.authenticate) &&
                     <div>
                         <NavItem href="/">Accueil</NavItem>
                         <NavItem href="/ressources">

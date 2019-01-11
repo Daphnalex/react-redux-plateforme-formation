@@ -1,0 +1,31 @@
+.side-nav {
+    top: inherit !important;
+}
+
+.side-nav a{
+    height: inherit !important;
+}
+
+.side-nav li{
+    float: left !important;
+}
+
+.typeOfRessource{
+    display: block;
+    width: 150px;
+}
+
+.typeOfRessource img,.typeOfRessource div{
+    width: 100%;
+    text-align: center;
+}
+
+.typeOfRessource div{
+    margin-top: -20px !important;
+}
+
+.side-nav .subheader{
+    font-size: 16px !important;
+    margin-top: 15px !important;
+    margin-bottom: 15px !important;
+}

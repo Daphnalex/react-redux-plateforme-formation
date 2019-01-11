@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import config from '../config/index';
+
+import config from '../config';
 import { userService } from '../services/user.service';
 import history from '../helpers/history';
-
+import jwtDecode from 'jwt-decode';
 
 // export function fetchUsers() {
 //     return dispatch => {
@@ -27,11 +27,18 @@ export function loginUser(username, password) {
             .then(
                 user => {
                     console.log('ici',user)
-                    dispatch(loginUserSuccess(user.token));
-                    history.push('/')
+                    if (user){
+                        var token = jwtDecode(user.token);
+                        console.log('token decrypt',token)
+                        dispatch(loginUserSuccess(token));
+                        history.push('/')
+                    }
                 },
                 error => {
+                    console.log('error');
+                    console.log(error);
                     dispatch(loginUserFailure(error));
+                    history.push('/login');
                 })
     }
 }
@@ -41,6 +48,12 @@ export function logoutUser(){
     return dispatch => {
         userService.logoutUser();
         dispatch(logoutUserSuccess());
+    }
+}
+
+export function editInputUser(){
+    return dispatch => {
+        dispatch(editInput())
     }
 }
 
@@ -67,6 +80,7 @@ export const LOGIN_USER_BEGIN = "LOGIN_USER_BEGIN";
 export const LOGIN_USER_SUCCESS = "LOGIN_USER_SUCCESS";
 export const LOGIN_USER_FAILURE = "LOGIN_USER_FAILURE";
 export const LOGOUT_USER = "LOGOUT_USER";
+export const LOGIN_EDIT_INPUT = "LOGIN_EDIT_INPUT";
 
 export const loginUserBegin = () => ({
     type: LOGIN_USER_BEGIN
@@ -84,4 +98,8 @@ export const loginUserFailure = (error) => ({
 
 export const logoutUserSuccess = () => ({
     type: LOGOUT_USER
+});
+
+export const editInput = () => ({
+    type: LOGIN_EDIT_INPUT
 });
