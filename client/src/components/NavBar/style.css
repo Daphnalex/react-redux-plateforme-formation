@@ -1,0 +1,14 @@
+div.nav-wrapper {
+    background-color: #49c2ff !important;
+}
+a.brand-logo{
+    left: 20px !important;
+}
+ul.dropdown-content li{
+    padding-top: 10% !important;
+}
+ul.dropdown-content{
+    width:11% !important;
+    padding: 5px !important;
+    text-align: center !important;
+}
