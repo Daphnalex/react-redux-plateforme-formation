@@ -1,5 +1,6 @@
 .side-nav {
     top: inherit !important;
+    z-index: 500 !important;
 }
 
 .side-nav a{
@@ -28,4 +29,18 @@
     font-size: 16px !important;
     margin-top: 15px !important;
     margin-bottom: 15px !important;
+}
+
+.right {
+    float: right !important;
+}
+
+.actionsRessourceList i {
+    margin-right: 15px;
+    margin-left: 15px;
+}
+
+.actionsRessourceList i:hover {
+   cursor: pointer;
+   color: grey;
 }

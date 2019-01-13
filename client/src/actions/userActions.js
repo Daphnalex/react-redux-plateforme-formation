@@ -1,5 +1,3 @@
-
-import config from '../config';
 import { userService } from '../services/user.service';
 import history from '../helpers/history';
 import jwtDecode from 'jwt-decode';
@@ -18,7 +16,6 @@ import jwtDecode from 'jwt-decode';
 //             .catch(error => dispatch(fetchUsersFailure(error)));
 //     };
 // };
-const domain = config.domain;
 
 export function loginUser(username, password) {
     return dispatch => {

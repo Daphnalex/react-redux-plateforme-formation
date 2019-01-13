@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { Card, CardTitle, Row, Col, Input, Icon, Button } from "react-materialize";
-import { Redirect } from 'react-router-dom';
 import Logo from './img/logo-formation-diplomante.png';
 import "./style.css";
 

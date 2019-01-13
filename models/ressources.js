@@ -2,11 +2,20 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const RessourceSchema = new Schema({
+    title: {
+        type: String,
+        required: true
+    },
+    description: String,
+    order: {
+        type:String,
+        required: true
+    },
     typeOfRessource: {
         type: String,
         required: true 
     },
-    author: {
+    authorId: {
         type: Schema.Types.ObjectId,
         ref: "User"
     },
@@ -15,7 +24,7 @@ const RessourceSchema = new Schema({
         required: true,
         default: false
     },
-    ressource: {
+    questions: {
         type: Schema.Types.Mixed,
         required: true
     }

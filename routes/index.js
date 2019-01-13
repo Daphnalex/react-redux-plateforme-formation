@@ -20,6 +20,13 @@ router
 
 router
     .route('/ressources')
+    .post(ctrlRessource.ressourceAddOne)
     .get(ctrlRessource.ressourceGetAll);
+
+router
+    .route('/ressources/:ressourceId')
+    .get(ctrlRessource.ressourceGetOne)
+    .put(ctrlRessource.ressourceUpdateOne)
+    .delete(ctrlRessource.ressourceDeleteOne);
 
 module.exports = router;

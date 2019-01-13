@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { Navbar, NavItem, Dropdown, Button } from "react-materialize";
-import { Redirect } from 'react-router-dom';
+import { Navbar, NavItem } from "react-materialize";
 import './style.css';
 import {logoutUser} from '../../actions/userActions';
 import {connect} from "react-redux";
@@ -11,7 +10,7 @@ class NavBar extends Component {
         return (
             <div>
                 <Navbar brand='Portail de formation' right>
-                    {(this.props.localStorage.authenticate) &&
+                    {(this.props.localStorage.token) &&
                     <div>
                         <NavItem href="/">Accueil</NavItem>
                         <NavItem href="/ressources">
