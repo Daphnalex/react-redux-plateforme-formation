@@ -33,8 +33,10 @@ export function getRessource(ressource){
     console.log('get ressource action');
     return dispatch => {
         dispatch(getRessourceBegin());
-        ressourceService.getRessource(ressource)
+        console.log('ressource in action',ressource)
+        ressourceService.getRessource(ressource._id)
             .then(ressource => {
+                console.log('ressource dans action',ressource)
                 dispatch(getRessourceSuccess(ressource))
             }, error => {
                 dispatch(getRessourceFailure(error))

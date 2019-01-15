@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
 import { connect } from "react-redux";
 import { Row, Col, SideNav, SideNavItem, Modal, Button } from 'react-materialize';
-import QCM from "./QCM";
-import QCU from "./QCU";
+import QcmComponent from "./QCM";
+import QcuComponent from "./QCU";
 import $ from 'jquery';
 
 class ListRessource extends Component {
 
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
             title: "",
@@ -15,20 +15,43 @@ class ListRessource extends Component {
             order: "",
             questions: [],
             modalPage: 0,
-            shareRessource: null
+            shareRessource: null,
+            cancel: false,
+            edition: false
         }
     }
 
+    componentDidMount() {
+        this.props.getAllRessources();
+    }
+
+    componentWillUpdate(){
+        console.log("will update",this.props)
+    }
+
     componentWillReceiveProps(nextProps){
-        console.log('nextProps',nextProps);
+        console.log('nextProps',nextProps)
+    }
+
+    componentDidUpdate() {
+       if (this.state.edition === true && this.props.currentRessource !== null){
+           console.log('edition',this.props);
+           this.setState({
+            title: this.props.currentRessource.title,
+            description: this.props.currentRessource.description,
+            order: this.props.currentRessource.order,
+            questions: this.props.currentRessource.questions,
+            modalPage: 0,
+            shareRessource: this.props.currentRessource.shareRessource,
+            edition: false
+           })
+       }
+
     }
 
     handleChange = (event, index) => {
         //event.preventDefault();
-        console.log('questions dans handleChange',this.state.questions)
-
         let newQuestions = Object.assign([], this.state.questions);
-        console.log('newQuestions',newQuestions);
 
         switch (event.target.id) {
             case 'answer':
@@ -66,8 +89,6 @@ class ListRessource extends Component {
 
     nextQuestion = (event) => {
         event.preventDefault();
-        console.log(this.state.modalPage);
-        console.log(this.state.questions);
         // we test if modal is a new question or not
         if (this.state.modalPage === this.state.questions.length) {
             //We prepare the new question and reset question, support and answers elements.
@@ -111,15 +132,11 @@ class ListRessource extends Component {
         })
     }
 
-    cancelModal = (ressource,index) => {
+    cancelModal = (ressource, index) => {
+        console.log('ressource',ressource);
+        this.props.getRessource(ressource);
         this.setState({
-            title: "",
-            description: "",
-            order: "",
-            questions: [],
-            modalPage: 0,
-            typeOfRessource: "",
-            shareRessource: null
+            cancel: true
         }, function () {
             $(document).ready(function () {
                 window.$('.modal').modal('close');
@@ -142,12 +159,9 @@ class ListRessource extends Component {
     }
 
     editRessource = (ressource) => {
+        this.props.getRessource(ressource);
         this.setState({
-            title: ressource.title,
-            description: ressource.description,
-            order: ressource.order,
-            questions: ressource.questions,
-            shareRessource: ressource.shareRessource
+            edition: true
         })
     }
 
@@ -156,8 +170,7 @@ class ListRessource extends Component {
     }
 
     testHeaderRessource = (ressource) => {
-        console.log('test header',ressource.typeOfRessource)
-        switch(ressource.typeOfRessource){
+        switch (ressource.typeOfRessource) {
             case "QCM":
                 return "Questionnaire à choix multiples";
             case "QCU":
@@ -165,20 +178,14 @@ class ListRessource extends Component {
         }
     }
 
-    testContentRessource = (ressource) => {
-        console.log('test content',ressource)
-        console.log(this.state.questions)
-        switch(ressource.typeOfRessource){
-            case "QCM":
-                return <QCM title={this.state.title ||ressource.title} description={this.state.description || ressource.description} order={this.state.order || ressource.order} questions={this.state.questions || ressource.questions} modalPage={this.state.modalPage} handleChange={this.handleChange} nextQuestion={this.nextQuestion} previousQuestion={this.previousQuestion} addAnswer={this.addAnswer} saveModal={this.saveModal} cancelModal={this.cancelModal}/>
-            case "QCU":
-                return <QCU title={ressource.title} description={ressource.description} order={ressource.order} questions={ressource.questions} modalPage={this.props.modalPage} handleChange={this.handleChange} nextQuestion={this.nextQuestion} previousQuestion={this.previousQuestion} addAnswer={this.addAnswer} />
-        }
-    }
-
 
     render() {
-        console.log('render list',this.state.currentRessource)
+        console.log('render', this.props.ressources)
+        const components = {
+            QcmComponent: QcmComponent,
+            QcuComponent: QcuComponent
+        };
+
         return (
             <div>
                 <table className="centered striped">
@@ -191,9 +198,9 @@ class ListRessource extends Component {
                         </tr>
                     </thead>
 
-                    {(this.props.ressources.ressources.length > 0) ?
+                    {(this.props.ressources.length > 0) ?
                         <tbody>
-                            {this.props.ressources.ressources.map((ressource, index) => (
+                            {this.props.ressources.map((ressource, index) => (
                                 <tr key={ressource}>
                                     <td>{ressource.title}</td>
                                     <td>{ressource.description}</td>
@@ -226,9 +233,11 @@ class ListRessource extends Component {
                                             }
                                             header={this.testHeaderRessource(ressource)}
                                             trigger={<span>
-                                                        <i className="material-icons" onClick={() => this.editRessource(ressource)}>edit</i>
-                                                    </span>}>
-                                            {this.testContentRessource(ressource)}
+                                                <i className="material-icons" onClick={() => this.editRessource(ressource)}>edit</i>
+                                            </span>}>
+                                            {(this.props.currentRessource !== null) &&
+                                                <div>{React.createElement(components[`${ressource.typeOfRessource.charAt(0).toUpperCase()}${ressource.typeOfRessource.substr(1).toLowerCase()}Component`], { title: this.state.title, description: this.state.description, order: this.state.order, questions: this.state.questions, modalPage: this.state.modalPage, handleChange: this.handleChange, nextQuestion: this.nextQuestion, previousQuestion: this.previousQuestion, addAnswer: this.addAnswer, saveModal: this.saveModal, cancelModal: this.cancelModal }, null)}</div>
+                                            }
                                         </Modal>
                                         <Modal
                                             actions={
@@ -257,9 +266,11 @@ class ListRessource extends Component {
                                             }
                                             header={this.testHeaderRessource(ressource)}
                                             trigger={<span>
-                                                        <i className="material-icons" onClick={() => this.deleteRessource(ressource)}>delete</i>
-                                                    </span>}>
-                                            {this.testContentRessource(ressource)}
+                                                <i className="material-icons" onClick={() => this.deleteRessource(ressource)}>delete</i>
+                                            </span>}>
+                                            {(this.props.currentRessource !== null) &&
+                                                <div>{React.createElement(components[`${ressource.typeOfRessource.charAt(0).toUpperCase()}${ressource.typeOfRessource.substr(1).toLowerCase()}Component`], { title: this.state.title, description: this.state.description, order: this.state.order, questions: this.state.questions, modalPage: this.state.modalPage, handleChange: this.handleChange, nextQuestion: this.nextQuestion, previousQuestion: this.previousQuestion, addAnswer: this.addAnswer, saveModal: this.saveModal, cancelModal: this.cancelModal }, null)}</div>
+                                            }
                                         </Modal>
                                     </td>
                                 </tr>
