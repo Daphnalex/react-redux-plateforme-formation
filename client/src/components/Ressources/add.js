@@ -3,8 +3,10 @@ import { Row, Col, SideNav, SideNavItem, Modal, Button } from 'react-materialize
 import QCM from "./QCM";
 import QCU from "./QCU";
 import $ from 'jquery';
+import {connect} from "react-redux";
+import { addNewRessource } from "../../actions/ressourceActions";
 
-export default class AddRessource extends Component {
+class AddRessource extends Component {
 
     constructor(props) {
         super(props);
@@ -16,7 +18,8 @@ export default class AddRessource extends Component {
             modalPage: 0,
             typeOfRessource: "",
             shareRessource: false,
-            author: localStorage.token.username
+            author: localStorage.token.username,
+            adding: this.props.adding
         }
     }
 
@@ -138,7 +141,8 @@ export default class AddRessource extends Component {
             order: this.state.order,
             questions: this.state.questions,
             typeOfRessource: this.state.typeOfRessource,
-            shareRessource: this.state.shareRessource
+            shareRessource: this.state.shareRessource,
+            adding: true
         }
         this.props.addNewRessource(ressource);
         $(document).ready(function () {
@@ -193,3 +197,14 @@ export default class AddRessource extends Component {
         )
     }
 }
+
+
+const mapDispatchToProps = dispatch => {
+    return {
+        addNewRessource: (ressource) => {
+            dispatch(addNewRessource(ressource))
+        }
+    }
+}
+
+export default connect(null, mapDispatchToProps) (AddRessource);

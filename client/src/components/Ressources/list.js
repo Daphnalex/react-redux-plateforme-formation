@@ -4,6 +4,7 @@ import { Row, Col, SideNav, SideNavItem, Modal, Button } from 'react-materialize
 import QcmComponent from "./QCM";
 import QcuComponent from "./QCU";
 import $ from 'jquery';
+import { getAllRessources, getRessource, editRessource } from "../../actions/ressourceActions";
 
 class ListRessource extends Component {
 
@@ -22,11 +23,18 @@ class ListRessource extends Component {
     }
 
     componentDidMount() {
+        console.log('did mount')
         this.props.getAllRessources();
     }
 
-    componentWillUpdate(){
-        console.log("will update",this.props)
+    componentWillMount(){
+        console.log('will mount')
+    }
+
+   
+
+    componentDidUpdate(){
+        console.log("did update");
     }
 
     componentWillReceiveProps(nextProps){
@@ -144,15 +152,18 @@ class ListRessource extends Component {
         });
     }
 
-    saveModal = (ressource) => {
-        var ressource = {
-            title: ressource.title,
-            description: ressource.description,
-            order: ressource.order,
-            questions: ressource.questions,
-            shareRessource: ressource.shareRessource
+    saveModal = (ressource,index) => {
+        console.log('ressource',this.state)
+        var newRessource = {
+            title: this.state.title,
+            description: this.state.description,
+            order: this.state.order,
+            questions: this.state.questions,
+            shareRessource: this.state.shareRessource,
+            _id: ressource._id
         }
-        this.props.addNewRessource(ressource);
+        console.log('newRessource', newRessource)
+        this.props.editRessource(newRessource,index);
         $(document).ready(function () {
             window.$('.modal').modal('close');
         });
@@ -201,7 +212,7 @@ class ListRessource extends Component {
                     {(this.props.ressources.length > 0) ?
                         <tbody>
                             {this.props.ressources.map((ressource, index) => (
-                                <tr key={ressource}>
+                                <tr key={index}>
                                     <td>{ressource.title}</td>
                                     <td>{ressource.description}</td>
                                     <td>{ressource.typeOfRessource}</td>
@@ -222,7 +233,7 @@ class ListRessource extends Component {
                                                                 <label>
                                                                     Partager cette ressource
                                                                 </label>
-                                                                <Button onClick={(event) => this.saveModal(event)}>
+                                                                <Button onClick={() => this.saveModal(ressource,index)}>
                                                                     <i className="material-icons">exit_to_app</i>
                                                                     Enregistrer
                                                                 </Button>
@@ -236,7 +247,7 @@ class ListRessource extends Component {
                                                 <i className="material-icons" onClick={() => this.editRessource(ressource)}>edit</i>
                                             </span>}>
                                             {(this.props.currentRessource !== null) &&
-                                                <div>{React.createElement(components[`${ressource.typeOfRessource.charAt(0).toUpperCase()}${ressource.typeOfRessource.substr(1).toLowerCase()}Component`], { title: this.state.title, description: this.state.description, order: this.state.order, questions: this.state.questions, modalPage: this.state.modalPage, handleChange: this.handleChange, nextQuestion: this.nextQuestion, previousQuestion: this.previousQuestion, addAnswer: this.addAnswer, saveModal: this.saveModal, cancelModal: this.cancelModal }, null)}</div>
+                                                <div key={ressource._id}>{React.createElement(components[`${ressource.typeOfRessource.charAt(0).toUpperCase()}${ressource.typeOfRessource.substr(1).toLowerCase()}Component`], { title: this.state.title, description: this.state.description, order: this.state.order, questions: this.state.questions, modalPage: this.state.modalPage, handleChange: this.handleChange, nextQuestion: this.nextQuestion, previousQuestion: this.previousQuestion, addAnswer: this.addAnswer, saveModal: this.saveModal, cancelModal: this.cancelModal }, null)}</div>
                                             }
                                         </Modal>
                                         <Modal
@@ -269,7 +280,7 @@ class ListRessource extends Component {
                                                 <i className="material-icons" onClick={() => this.deleteRessource(ressource)}>delete</i>
                                             </span>}>
                                             {(this.props.currentRessource !== null) &&
-                                                <div>{React.createElement(components[`${ressource.typeOfRessource.charAt(0).toUpperCase()}${ressource.typeOfRessource.substr(1).toLowerCase()}Component`], { title: this.state.title, description: this.state.description, order: this.state.order, questions: this.state.questions, modalPage: this.state.modalPage, handleChange: this.handleChange, nextQuestion: this.nextQuestion, previousQuestion: this.previousQuestion, addAnswer: this.addAnswer, saveModal: this.saveModal, cancelModal: this.cancelModal }, null)}</div>
+                                                <div key={ressource._id}>{React.createElement(components[`${ressource.typeOfRessource.charAt(0).toUpperCase()}${ressource.typeOfRessource.substr(1).toLowerCase()}Component`], { title: this.state.title, description: this.state.description, order: this.state.order, questions: this.state.questions, modalPage: this.state.modalPage, handleChange: this.handleChange, nextQuestion: this.nextQuestion, previousQuestion: this.previousQuestion, addAnswer: this.addAnswer, saveModal: this.saveModal, cancelModal: this.cancelModal }, null)}</div>
                                             }
                                         </Modal>
                                     </td>
@@ -291,4 +302,26 @@ class ListRessource extends Component {
     }
 }
 
-export default ListRessource;
+const mapStateToProps = state => {
+    return {
+        ressources: state.ressources.ressources,
+        currentRessource: state.ressources.currentRessource
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        getAllRessources: () => {
+            dispatch(getAllRessources())
+        },
+        getRessource: (ressource) => {
+            dispatch(getRessource(ressource))
+        },
+        editRessource: (ressource,index) => {
+            dispatch(editRessource(ressource,index))
+        }
+    }
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps) (ListRessource);

@@ -15,6 +15,7 @@ export function getAllRessources() {
 }
 
 export function addNewRessource(ressource) {
+    console.log('add action',ressource)
     return dispatch => {
         dispatch(addRessourceBegin());
         var token = localStorage.token;
@@ -22,7 +23,8 @@ export function addNewRessource(ressource) {
         console.log('token decrypt',token);
         ressourceService.addRessource(ressource,token._id)
             .then(ressource => {
-                dispatch(addRessourceSuccess(ressource))
+                console.log('ressouce dans la function then',ressource)
+                dispatch(addRessourceSuccess(ressource));
             }, error => {
                 dispatch(addRessourceFailure(error))
             })
@@ -44,13 +46,14 @@ export function getRessource(ressource){
     }
 }
 
-export function editRessource(ressource){
-    console.log('edit ressource action');
+export function editRessource(ressource,index){
+    console.log('edit ressource action',ressource);
     return dispatch => {
         dispatch(editRessourceBegin());
         ressourceService.editRessource(ressource)
             .then(ressource => {
-                dispatch(editRessourceSuccess(ressource));
+                console.log("ressource dans le then",ressource)
+                dispatch(editRessourceSuccess(ressource,index));
             }, error => {
                 dispatch(editRessourceFailure(error))
             });
@@ -117,9 +120,9 @@ export const editRessourceBegin = () => ({
     type: EDIT_ONE_RESSOURCE_BEGIN
 });
 
-export const editRessourceSuccess = (ressource) => ({
+export const editRessourceSuccess = (ressource,index) => ({
     type: EDIT_ONE_RESSOURCE_SUCCESS,
-    payload:  { ressource }
+    payload:  { ressource : ressource, index: index }
 })
 
 export const editRessourceFailure = (error) => ({

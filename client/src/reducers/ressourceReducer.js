@@ -21,6 +21,7 @@ const initialState = {
 }
 
 export default function fetchRessourcesReducer(state = initialState, action){
+    console.log('action type',action.payload)
     switch(action.type){
         case GET_ONE_RESSOURCE_BEGIN:
             return {
@@ -65,7 +66,7 @@ export default function fetchRessourcesReducer(state = initialState, action){
             return {
                 ...state,
                 loading: false,
-                ressource: action.payload.ressource
+                ressources: [...state.ressources, action.payload.ressource]
             }
         case ADD_ONE_RESSOURCE_FAILURE:
             return {
@@ -79,10 +80,17 @@ export default function fetchRessourcesReducer(state = initialState, action){
                 loading: true
             }
         case EDIT_ONE_RESSOURCE_SUCCESS:
+            state.ressources[action.payload.index] = {
+                ...state.ressources[action.payload.index],
+                ...action.payload.ressource
+            }
+            console.log('in reducer',state.ressources);
+            console.log('ressource envoyé',action.payload.ressource)
             return {
                 ...state,
                 loading: false,
-                currentRessource: action.payload.ressource
+                currentRessource: action.payload.ressource,
+                ressources: state.ressources
             }
         case EDIT_ONE_RESSOURCE_FAILURE:
             return {

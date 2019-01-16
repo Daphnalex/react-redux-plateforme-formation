@@ -32,41 +32,38 @@ function getAllRessources(){
 }
 
 function addRessource(ressource,authorId){
+    console.log('ressource in service',ressource)
     return fetch(`${domain}/ressources`, {
-        method: "POST",
+        method: 'POST',
+        mode: 'CORS',
+        body: JSON.stringify(ressource),
         headers: {
-            'Accept': 'application/json',
             'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            title: ressource.title,
-            description: ressource.description,
-            order: ressource.order,
-            typeOfRessource: ressource.typeOfRessource,
-            authorId: authorId,
-            shareRessource: ressource.shareRessource,
-            questions: ressource.questions
+        }
         })
-    })
+        .then(handleErrors)
+        .then(res => res.json())
+        .then(ressource => {
+            return ressource;
+        });
 }
 
 function editRessource(ressource){
+    console.log('ressource reçu par le service',ressource)
     return fetch(`${domain}/ressources/${ressource._id}`,{
         method: 'PUT',
+        mode: 'CORS',
+        body: JSON.stringify(ressource),
         headers: {
-            'Accept': 'application/json',
             'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            title: ressource.title,
-            description: ressource.description,
-            order: ressource.order,
-            typeOfRessource: ressource.typeOfRessource,
-            authorId: ressource.authorId,
-            shareRessource: ressource.shareRessource,
-            questions: ressource.questions
+            }
         })
-    })
+        .then(handleErrors)
+        .then(res => res.json())
+        .then(ressource => {
+            console.log('ressource reçu du back',ressource)
+            return ressource;
+        });
 }
 
 // Handle HTTP errors since fetch won't.

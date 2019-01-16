@@ -15,6 +15,7 @@ module.exports.ressourceGetOne = (req, res) => {
 }
 
 module.exports.ressourceAddOne = (req, res) => {
+    console.log('req de add',req.body)
     const newRessource = new Ressource({
         title: req.body.title,
         order: req.body.order,
@@ -30,20 +31,23 @@ module.exports.ressourceAddOne = (req, res) => {
 
 module.exports.ressourceDeleteOne = (req, res) => {
     Ressource.findById(req.params.ressourceId)
-        .then((ressource) => ressource.remove().then(() => res.json({ success: true, message: "Ressource deleted" }).catch(() => res.json({ success: false, message: "Error to delete ressource" }))))
+        .then((ressource) => ressource.remove().then(() => res.json({ success: true, message: "Ressource deleted" }).catch((err) => res.json({ success: false, message: "Error to delete ressource" }))))
         .catch(err => res.json(err))
 }
 
 module.exports.ressourceUpdateOne = (req,res) => {
+    console.log('entre dans le update du back',req.body)
     Ressource.findById(req.params.ressourceId)
         .then((ressource) => {
-            ressource.title = req.body.title || ressource.title;
-            order: req.body.order || ressource.order;
-            description: req.body.description || ressource.description;
-            typeOfRessource: req.body.typeOfRessource || ressource.typeOfRessource;
-            authorId: req.body.authorId || ressource.authorId;
-            shareRessource: req.body.shareRessource || ressource.shareRessource;
-            questions: req.body.questions || ressource.questions;
-            ressource.save().then(ressource => res.json({success: true, ressource: ressource, message: 'Ressource updated'})).catch(() => res.json({success: false, message: "Error to update ressource"}))
+            ressource.title = req.body.title;
+            ressource.order = req.body.order;
+            ressource.description = req.body.description;
+            ressource.shareRessource = req.body.shareRessource;
+            ressource.questions = req.body.questions;
+            console.log("ressource avant sauvegarde", ressource)
+            ressource.save().then(ressource => {
+                console.log('ressource updated',ressource);
+                res.json(ressource)
+            }).catch(() => res.json({success: false, message: "Error to update ressource"}))
         }).catch(err => res.json(err));
 }
