@@ -60,6 +60,20 @@ export function editRessource(ressource,index){
     }
 }
 
+export function deleteRessource(ressource){
+    console.log('delete ressource action',ressource);
+    return dispatch => {
+        dispatch(deleteRessourceBegin());
+        ressourceService.deleteRessource(ressource._id)
+            .then((result) => {
+                console.log('index dans action',result.ressource)
+                dispatch(deleteRessourceSuccess(result.ressource));
+            }, error => {
+                dispatch(deleteRessourceFailure(error))
+            });
+    }
+}
+
 export const GET_ONE_RESSOURCE_BEGIN = "GET_ONE_RESSOURCE_BEGIN";
 export const GET_ONE_RESSOURCE_SUCCESS = "GET_ONE_RESSOURCE_SUCCESS";
 export const GET_ONE_RESSOURCE_FAILURE = "GET_ONE_RESSOURCE_FAILURE";
@@ -72,7 +86,9 @@ export const ADD_ONE_RESSOURCE_FAILURE = "ADD_ONE_RESSOURCE_FAILURE";
 export const EDIT_ONE_RESSOURCE_BEGIN = "EDIT_ONE_RESSOURCE_BEGIN";
 export const EDIT_ONE_RESSOURCE_SUCCESS = "EDIT_ONE_RESSOURCE_SUCCESS";
 export const EDIT_ONE_RESSOURCE_FAILURE = "EDIT_ONE_RESSOURCE_FAILURE";
-
+export const DELETE_ONE_RESSOURCE_BEGIN = "DELETE_ONE_RESSOURCE_BEGIN";
+export const DELETE_ONE_RESSOURCE_SUCCESS = "DELETE_ONE_RESSOURCE_SUCCESS";
+export const DELETE_ONE_RESSOURCE_FAILURE = "DELETE_ONE_RESSOURCE_FAILURE";
 
 export const getRessourceBegin = () => ({
     type: GET_ONE_RESSOURCE_BEGIN
@@ -127,5 +143,19 @@ export const editRessourceSuccess = (ressource,index) => ({
 
 export const editRessourceFailure = (error) => ({
     type: EDIT_ONE_RESSOURCE_FAILURE,
+    payload: { error }
+})
+
+export const deleteRessourceBegin = () => ({
+    type: DELETE_ONE_RESSOURCE_BEGIN
+})
+
+export const deleteRessourceSuccess = (ressource) => ({
+    type: DELETE_ONE_RESSOURCE_SUCCESS,
+    payload: { ressource }
+})
+
+export const deleteRessourceFailure = (error) => ({
+    type: DELETE_ONE_RESSOURCE_FAILURE,
     payload: { error }
 })

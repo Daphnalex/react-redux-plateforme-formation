@@ -6,7 +6,8 @@ export const ressourceService = {
     getAllRessources,
     addRessource,
     editRessource,
-    getRessource
+    getRessource,
+    deleteRessource
 };
 
 function getRessource(ressourceId){
@@ -64,6 +65,14 @@ function editRessource(ressource){
             console.log('ressource reçu du back',ressource)
             return ressource;
         });
+}
+
+function deleteRessource(id,index){
+    return fetch(`${domain}/ressources/${id}`,{
+        method: 'DELETE'
+        })
+        .then(handleErrors)
+        .then(res => res.json());
 }
 
 // Handle HTTP errors since fetch won't.

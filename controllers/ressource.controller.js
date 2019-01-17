@@ -31,7 +31,7 @@ module.exports.ressourceAddOne = (req, res) => {
 
 module.exports.ressourceDeleteOne = (req, res) => {
     Ressource.findById(req.params.ressourceId)
-        .then((ressource) => ressource.remove().then(() => res.json({ success: true, message: "Ressource deleted" }).catch((err) => res.json({ success: false, message: "Error to delete ressource" }))))
+        .then((ressource) => ressource.remove().then((ressource) => res.json({ success: true, message: "Ressource deleted", ressource: ressource }).catch((err) => res.json({ success: false, message: "Error to delete ressource" }))))
         .catch(err => res.json(err))
 }
 
@@ -51,3 +51,4 @@ module.exports.ressourceUpdateOne = (req,res) => {
             }).catch(() => res.json({success: false, message: "Error to update ressource"}))
         }).catch(err => res.json(err));
 }
+

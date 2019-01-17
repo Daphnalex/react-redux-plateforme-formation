@@ -10,7 +10,10 @@ import {
     ADD_ONE_RESSOURCE_FAILURE,
     EDIT_ONE_RESSOURCE_BEGIN,
     EDIT_ONE_RESSOURCE_SUCCESS,
-    EDIT_ONE_RESSOURCE_FAILURE
+    EDIT_ONE_RESSOURCE_FAILURE,
+    DELETE_ONE_RESSOURCE_BEGIN,
+    DELETE_ONE_RESSOURCE_SUCCESS,
+    DELETE_ONE_RESSOURCE_FAILURE
 } from "../actions/ressourceActions";
 
 const initialState = {
@@ -21,7 +24,7 @@ const initialState = {
 }
 
 export default function fetchRessourcesReducer(state = initialState, action){
-    console.log('action type',action.payload)
+    console.log('action payload',action.payload)
     switch(action.type){
         case GET_ONE_RESSOURCE_BEGIN:
             return {
@@ -93,6 +96,29 @@ export default function fetchRessourcesReducer(state = initialState, action){
                 ressources: state.ressources
             }
         case EDIT_ONE_RESSOURCE_FAILURE:
+            return {
+                ...state,
+                loading: false,
+                error: action.payload.error
+            }
+        case DELETE_ONE_RESSOURCE_BEGIN:
+            return {
+                ...state,
+                loading: true
+            }
+        case DELETE_ONE_RESSOURCE_SUCCESS:
+            state.ressources.map((ressource,i) => {
+                if(ressource._id === action.payload.ressource._id){
+                    state.ressources.splice(i,1)
+                }
+            })
+            console.log("after delete",state.ressources)
+            return {
+                ressources: state.ressources,
+                loading: false,
+                currentRessource: null
+            }
+        case DELETE_ONE_RESSOURCE_FAILURE: 
             return {
                 ...state,
                 loading: false,

@@ -4,7 +4,7 @@ import { Row, Col, SideNav, SideNavItem, Modal, Button } from 'react-materialize
 import QcmComponent from "./QCM";
 import QcuComponent from "./QCU";
 import $ from 'jquery';
-import { getAllRessources, getRessource, editRessource } from "../../actions/ressourceActions";
+import { getAllRessources, getRessource, editRessource, deleteRessource } from "../../actions/ressourceActions";
 
 class ListRessource extends Component {
 
@@ -16,7 +16,7 @@ class ListRessource extends Component {
             order: "",
             questions: [],
             modalPage: 0,
-            shareRessource: null,
+            shareRessource: false,
             cancel: false,
             edition: false
         }
@@ -27,40 +27,40 @@ class ListRessource extends Component {
         this.props.getAllRessources();
     }
 
-    componentWillMount(){
+    componentWillMount() {
         console.log('will mount')
     }
 
-   
 
-    componentDidUpdate(){
+
+    componentDidUpdate() {
         console.log("did update");
     }
 
-    componentWillReceiveProps(nextProps){
-        console.log('nextProps',nextProps)
+    componentWillReceiveProps(nextProps) {
+        console.log('nextProps', nextProps)
     }
 
     componentDidUpdate() {
-       if (this.state.edition === true && this.props.currentRessource !== null){
-           console.log('edition',this.props);
-           this.setState({
-            title: this.props.currentRessource.title,
-            description: this.props.currentRessource.description,
-            order: this.props.currentRessource.order,
-            questions: this.props.currentRessource.questions,
-            modalPage: 0,
-            shareRessource: this.props.currentRessource.shareRessource,
-            edition: false
-           })
-       }
+        if (this.state.edition === true && this.props.currentRessource !== null) {
+            console.log('edition', this.props);
+            this.setState({
+                title: this.props.currentRessource.title,
+                description: this.props.currentRessource.description,
+                order: this.props.currentRessource.order,
+                questions: this.props.currentRessource.questions,
+                modalPage: 0,
+                shareRessource: this.props.currentRessource.shareRessource,
+                edition: false
+            })
+        }
 
     }
 
     handleChange = (event, index) => {
         //event.preventDefault();
         let newQuestions = Object.assign([], this.state.questions);
-
+        console.log('event.target.id',event.target.id)
         switch (event.target.id) {
             case 'answer':
                 //change the state of answer according to his index
@@ -83,10 +83,10 @@ class ListRessource extends Component {
                 });
                 break;
             case 'shareRessource':
-                newQuestions[this.state.modalPage - 1].answers[index].shareRessource = event.target.checked;
+                console.log('dans switch shareRessource',event.target.checked);
                 this.setState({
-                    newQuestions
-                });
+                    shareRessource: event.target.checked
+                })
                 break;
             default:
                 this.setState({
@@ -141,7 +141,7 @@ class ListRessource extends Component {
     }
 
     cancelModal = (ressource, index) => {
-        console.log('ressource',ressource);
+        console.log('ressource', ressource);
         this.props.getRessource(ressource);
         this.setState({
             cancel: true
@@ -152,8 +152,8 @@ class ListRessource extends Component {
         });
     }
 
-    saveModal = (ressource,index) => {
-        console.log('ressource',this.state)
+    saveModal = (ressource, index) => {
+        console.log('ressource', this.state)
         var newRessource = {
             title: this.state.title,
             description: this.state.description,
@@ -163,7 +163,7 @@ class ListRessource extends Component {
             _id: ressource._id
         }
         console.log('newRessource', newRessource)
-        this.props.editRessource(newRessource,index);
+        this.props.editRessource(newRessource, index);
         $(document).ready(function () {
             window.$('.modal').modal('close');
         });
@@ -177,7 +177,16 @@ class ListRessource extends Component {
     }
 
     deleteRessource = (ressource) => {
+        this.props.deleteRessource(ressource);
+        $(document).ready(function () {
+            window.$('.modal').modal('close');
+        });
+    }
 
+    cancelDelete = (event) => {
+        $(document).ready(function () {
+            window.$('.modal').modal('close');
+        });
     }
 
     testHeaderRessource = (ressource) => {
@@ -229,11 +238,11 @@ class ListRessource extends Component {
                                                         {((ressource.title !== "") && (ressource.order !== "") && (ressource.questions.length > 0))
                                                             &&
                                                             <div className="right">
-                                                                <input type="radio" id="shareRessource" name="shareRessource" onChange={(event) => this.props.handleChange(event, null)} checked={ressource.shareRessource} />
-                                                                <label>
+                                                                <input type="checkbox" id="shareRessource" name="shareRessource" onChange={(event) => this.handleChange(event,index)} checked={this.state.shareRessource} />
+                                                               <label>
                                                                     Partager cette ressource
                                                                 </label>
-                                                                <Button onClick={() => this.saveModal(ressource,index)}>
+                                                                <Button onClick={() => this.saveModal(ressource, index)}>
                                                                     <i className="material-icons">exit_to_app</i>
                                                                     Enregistrer
                                                                 </Button>
@@ -254,34 +263,26 @@ class ListRessource extends Component {
                                             actions={
                                                 <Row className="footerBtn">
                                                     <Col s={6} className="left">
-                                                        <Button onClick={(event) => this.cancelModal(event)}>
+                                                        <Button onClick={(event) => this.cancelDelete(event)}>
                                                             Annuler
                                                     </Button>
                                                     </Col>
                                                     <Col s={6} className="right">
-                                                        {((ressource.title !== "") && (ressource.order !== "") && (ressource.questions.length > 0))
-                                                            &&
-                                                            <div className="right">
-                                                                <input type="radio" id="shareRessource" name="shareRessource" onChange={(event) => this.props.handleChange(event, null)} checked={ressource.shareRessource} />
-                                                                <label>
-                                                                    Partager cette ressource
-                                                                </label>
-                                                                <Button>
-                                                                    <i className="material-icons">exit_to_app</i>
-                                                                    Enregistrer
+                                                        <div className="right">
+                                                            <Button onClick={() => this.deleteRessource(ressource, index)}>
+                                                                <i className="material-icons">exit_to_app</i>
+                                                                Supprimer
                                                                 </Button>
-                                                            </div>
-                                                        }
+                                                        </div>
                                                     </Col>
                                                 </Row>
                                             }
-                                            header={this.testHeaderRessource(ressource)}
+                                            header={"Avertissement"}
                                             trigger={<span>
-                                                <i className="material-icons" onClick={() => this.deleteRessource(ressource)}>delete</i>
+                                                <i className="material-icons">delete</i>
                                             </span>}>
-                                            {(this.props.currentRessource !== null) &&
-                                                <div key={ressource._id}>{React.createElement(components[`${ressource.typeOfRessource.charAt(0).toUpperCase()}${ressource.typeOfRessource.substr(1).toLowerCase()}Component`], { title: this.state.title, description: this.state.description, order: this.state.order, questions: this.state.questions, modalPage: this.state.modalPage, handleChange: this.handleChange, nextQuestion: this.nextQuestion, previousQuestion: this.previousQuestion, addAnswer: this.addAnswer, saveModal: this.saveModal, cancelModal: this.cancelModal }, null)}</div>
-                                            }
+                                            Etes-vous sûr de vouloir supprimer cette ressource ?<br />
+                                            <i>La suppression sera définitive.</i>
                                         </Modal>
                                     </td>
                                 </tr>
@@ -317,11 +318,14 @@ const mapDispatchToProps = dispatch => {
         getRessource: (ressource) => {
             dispatch(getRessource(ressource))
         },
-        editRessource: (ressource,index) => {
-            dispatch(editRessource(ressource,index))
+        editRessource: (ressource, index) => {
+            dispatch(editRessource(ressource, index))
+        },
+        deleteRessource: (ressource) => {
+            dispatch(deleteRessource(ressource))
         }
     }
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps) (ListRessource);
+export default connect(mapStateToProps, mapDispatchToProps)(ListRessource);
