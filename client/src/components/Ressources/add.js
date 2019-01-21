@@ -5,6 +5,7 @@ import QCU from "./QCU";
 import $ from 'jquery';
 import {connect} from "react-redux";
 import { addNewRessource } from "../../actions/ressourceActions";
+import axios from "axios";
 
 class AddRessource extends Component {
 
@@ -19,8 +20,13 @@ class AddRessource extends Component {
             typeOfRessource: "",
             shareRessource: false,
             author: localStorage.token.username,
-            adding: this.props.adding
+            adding: this.props.adding,
+            supportType: "",
+            selectedFile: null
         }
+        this.defineSupport = this.defineSupport.bind(this);
+        this.fileUploadHandler = this.fileUploadHandler.bind(this);
+        this.fileSelectedHandler = this.fileSelectedHandler.bind(this);
     }
 
     handleChange = (event, index) => {
@@ -71,7 +77,8 @@ class AddRessource extends Component {
             //We prepare the new question and reset question, support and answers elements.
             this.setState({
                 questions: [...this.state.questions, {
-                    support: "",
+                    supportType: "",
+                    supportPath: "",
                     question: "",
                     answers: []
                 }]
@@ -150,6 +157,52 @@ class AddRessource extends Component {
         });
     }
 
+    fileUploadHandler(event) {
+        event.preventDefault();
+        const fd = new FormData();
+        fd.append('uploadFile', this.state.selectedFile, this.state.selectedFile.name);
+        axios.post('http://localhost:5001/api/uploads', fd, {
+            onUploadProgress: ProgressEvent => {
+                console.log('Upload Progress: ' + Math.round(ProgressEvent.loaded / ProgressEvent.total * 100))
+            }
+        }).then(res => {
+            console.log(res);
+            if (res.status === 200){
+                let newQuestions = Object.assign([], this.state.questions);
+                newQuestions[this.state.modalPage - 1].supportPath = res.data.path;
+                this.setState({
+                    questions: newQuestions
+                },function(){
+                    console.log('après upload',this.state.questions)
+                });
+            }
+        });
+        
+        
+        //this.props.addNewUpload(this.state.selectedFile, this.state.supportType);
+    }
+
+    defineSupport(event){
+        event.preventDefault();
+        let newQuestions = Object.assign([], this.state.questions);
+        newQuestions[this.state.modalPage - 1].supportType = event.target.id;
+        console.log('choice', event.target.id);
+        this.setState({
+            supportType: event.target.id,
+            questions: newQuestions
+        })
+    }
+
+    fileSelectedHandler(event) {
+        event.preventDefault();
+        console.log('choice', event.target.files[0]);
+        var value = event.target.files[0];
+        console.log('value selectedFile',event.target.files[0])
+        this.setState({
+            selectedFile: event.target.files[0]
+        })
+    }
+
     render() {
         return (
             <SideNav>
@@ -183,7 +236,7 @@ class AddRessource extends Component {
                         }
                         header='Questionnaire à choix multiples'
                         trigger={<div><img src="/images/qcm_logo.png" alt="logo QCM" id='QCM' onClick={this.selectTypeOfRessource} /><div>QCM</div></div>}>
-                        <QCM title={this.state.title} description={this.state.description} order={this.state.order} questions={this.state.questions} modalPage={this.state.modalPage} handleChange={this.handleChange} nextQuestion={this.nextQuestion} previousQuestion={this.previousQuestion} addAnswer={this.addAnswer} />
+                        <QCM title={this.state.title} description={this.state.description} order={this.state.order} questions={this.state.questions} modalPage={this.state.modalPage} supportType={this.state.supportType} selectedFile={this.state.selectedFile} defineSupport={this.defineSupport} fileSelectedHandler={this.fileSelectedHandler} fileUploadHandler={this.fileUploadHandler} handleChange={this.handleChange} nextQuestion={this.nextQuestion} previousQuestion={this.previousQuestion} addAnswer={this.addAnswer} />
                     </Modal>
                 </SideNavItem>
                 <SideNavItem className="typeOfRessource">

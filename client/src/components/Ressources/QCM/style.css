@@ -115,3 +115,14 @@ label {
 .center{
     text-align: center !important;
 }
+
+.btn.choiceSupport{
+    background-color: #f1f0f1 !important;
+    color: grey !important;
+    margin-right: 20px;
+}
+
+.btn.choiceSupport.active{
+    background-color:  #49c2ff !important;
+    color: white !important;
+}

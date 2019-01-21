@@ -1,12 +1,14 @@
 import React, { Component } from 'react'
 import { Row, Col, Button } from "react-materialize";
+import Iframe from "react-iframe";
 import './style.css';
 
+
 export default class QCM extends Component {
-  
+
 
   render() {
-
+    console.log('QCM questions',this.props.questions)
     return (
       <div>
         {(this.props.modalPage === 0) ?
@@ -47,6 +49,39 @@ export default class QCM extends Component {
               </Row>
               <Row>
                 <label>
+                  Support :
+                </label>
+                <Row>
+                  <Col s={4}>
+                    <Button className={this.props.supportType === "text" ? "choiceSupport active" : "choiceSupport"} id="text" onClick={(event) => this.props.defineSupport(event)}>Text</Button>
+                    <Button className={this.props.supportType === "image" ? "choiceSupport active" : "choiceSupport"} id="image" onClick={(event) => this.props.defineSupport(event)}>Image</Button>
+                    <Button className={this.props.supportType === "video" ? "choiceSupport active" : "choiceSupport"} id="video" onClick={(event) => this.props.defineSupport(event)}>Vidéo</Button>
+                  </Col>
+                </Row>
+                <Row>
+                  {(this.props.supportType === "text") &&
+                    <div>Editeur de texte à mettre ici !!!!</div>
+                  }
+                  {(this.props.supportType === "image") &&
+                    <div>
+                      <input type='file' name='uploadFile' id='file' form='saveSupportFile' onChange={(event) => this.props.fileSelectedHandler(event)} />
+                      <Button onClick={(event) => this.props.fileUploadHandler(event)}><i className="material-icons">cloud_upload</i> Télécharger</Button>
+                    </div>
+                  }
+                  {(this.props.supportType === "video") &&
+                    <div>Upload video ici !</div>
+                  }
+                  {(this.props.questions[this.props.modalPage - 1].supportType === 'image' && this.props.questions[this.props.modalPage - 1].supportPath !== "") &&
+                   <div>
+                     Rendu : <br/>
+                    <img src={require(this.props.selectedFile)} alt="image support" />
+                    </div>
+                  }
+                  
+                </Row>
+              </Row>
+              <Row>
+                <label>
                   Question {this.props.modalPage} :
                   <input id="question" type="text" value={this.props.questions[this.props.modalPage - 1].question} onChange={(event) => this.props.handleChange(event, null)} />
                 </label>
@@ -69,29 +104,29 @@ export default class QCM extends Component {
                     )))}
                   </div>}
               </Row>
-            <Row>
-              {(this.props.modalPage > 0)
-                &&
-                <Col s={6} className="btnPrevious">
-                  <Button onClick={this.props.previousQuestion}><i className="material-icons">keyboard_arrow_left</i></Button>
-                </Col>
-              }
-              <div>
-                {(this.props.modalPage === this.props.questions.length)
-                  ?
-                  <Col s={6} className="btnNext right">
-                    <Button onClick={this.props.nextQuestion}>Ajouter une question</Button>
-                  </Col>
-                  :
-                  <Col s={6} className="btnNext right">
-                    <Button onClick={this.props.nextQuestion}><i className="material-icons">keyboard_arrow_right</i></Button>
+              <Row>
+                {(this.props.modalPage > 0)
+                  &&
+                  <Col s={6} className="btnPrevious">
+                    <Button onClick={this.props.previousQuestion}><i className="material-icons">keyboard_arrow_left</i></Button>
                   </Col>
                 }
-              </div>
-            </Row>
+                <div>
+                  {(this.props.modalPage === this.props.questions.length)
+                    ?
+                    <Col s={6} className="btnNext right">
+                      <Button onClick={this.props.nextQuestion}>Ajouter une question</Button>
+                    </Col>
+                    :
+                    <Col s={6} className="btnNext right">
+                      <Button onClick={this.props.nextQuestion}><i className="material-icons">keyboard_arrow_right</i></Button>
+                    </Col>
+                  }
+                </div>
+              </Row>
             </form>
           </div>
-      }
+        }
       </div>
     )
   }

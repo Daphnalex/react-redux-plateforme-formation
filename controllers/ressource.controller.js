@@ -51,4 +51,3 @@ module.exports.ressourceUpdateOne = (req,res) => {
             }).catch(() => res.json({success: false, message: "Error to update ressource"}))
         }).catch(err => res.json(err));
 }
-

@@ -5,6 +5,8 @@ import QcmComponent from "./QCM";
 import QcuComponent from "./QCU";
 import $ from 'jquery';
 import { getAllRessources, getRessource, editRessource, deleteRessource } from "../../actions/ressourceActions";
+import { addNewUpload } from '../../actions/uploadActions';
+import axios from "axios";
 
 class ListRessource extends Component {
 
@@ -18,27 +20,20 @@ class ListRessource extends Component {
             modalPage: 0,
             shareRessource: false,
             cancel: false,
-            edition: false
+            edition: false,
+            supportType: "",
+            selectedFile: ""
         }
+        this.defineSupport = this.defineSupport.bind(this);
+        this.fileUploadHandler = this.fileUploadHandler.bind(this);
+        this.fileSelectedHandler = this.fileSelectedHandler.bind(this);
     }
+
+
 
     componentDidMount() {
         console.log('did mount')
         this.props.getAllRessources();
-    }
-
-    componentWillMount() {
-        console.log('will mount')
-    }
-
-
-
-    componentDidUpdate() {
-        console.log("did update");
-    }
-
-    componentWillReceiveProps(nextProps) {
-        console.log('nextProps', nextProps)
     }
 
     componentDidUpdate() {
@@ -51,7 +46,9 @@ class ListRessource extends Component {
                 questions: this.props.currentRessource.questions,
                 modalPage: 0,
                 shareRessource: this.props.currentRessource.shareRessource,
-                edition: false
+                edition: false,
+                supportType: this.props.currentRessource.supportType,
+                selectedFile: this.props.currentRessource.selectedFile
             })
         }
 
@@ -60,30 +57,38 @@ class ListRessource extends Component {
     handleChange = (event, index) => {
         //event.preventDefault();
         let newQuestions = Object.assign([], this.state.questions);
-        console.log('event.target.id',event.target.id)
+        console.log('event.target.id', event.target.id)
         switch (event.target.id) {
             case 'answer':
                 //change the state of answer according to his index
                 newQuestions[this.state.modalPage - 1].answers[index].answer = event.target.value;
                 this.setState({
-                    newQuestions
+                    questions: newQuestions
+                });
+                break;
+            case 'support':
+                console.log('support', event.target.value)
+                //change the state of support according to his index
+                newQuestions[this.state.modalPage - 1].support = event.target.value;
+                this.setState({
+                    questions: newQuestions
                 });
                 break;
             case 'question':
-                //change the state of answer according to his index
+                //change the state of question according to his index
                 newQuestions[this.state.modalPage - 1].question = event.target.value;
                 this.setState({
-                    newQuestions
+                    questions: newQuestions
                 });
                 break;
             case 'validation':
                 newQuestions[this.state.modalPage - 1].answers[index].validation = event.target.checked;
                 this.setState({
-                    newQuestions
+                    questions: newQuestions
                 });
                 break;
             case 'shareRessource':
-                console.log('dans switch shareRessource',event.target.checked);
+                console.log('dans switch shareRessource', event.target.checked);
                 this.setState({
                     shareRessource: event.target.checked
                 })
@@ -102,7 +107,8 @@ class ListRessource extends Component {
             //We prepare the new question and reset question, support and answers elements.
             this.setState({
                 questions: [...this.state.questions, {
-                    support: "",
+                    supportType: "",
+                    supportPath: "",
                     question: "",
                     answers: []
                 }]
@@ -160,6 +166,8 @@ class ListRessource extends Component {
             order: this.state.order,
             questions: this.state.questions,
             shareRessource: this.state.shareRessource,
+            supportType: this.state.supportType,
+            selectedFile: this.state.selectedFile,
             _id: ressource._id
         }
         console.log('newRessource', newRessource)
@@ -196,6 +204,48 @@ class ListRessource extends Component {
             case "QCU":
                 return "Questionnaire à choix uniques";
         }
+    }
+
+
+    fileUploadHandler(event) {
+        event.preventDefault();
+        const fd = new FormData();
+        fd.append('uploadFile', this.state.selectedFile, this.state.selectedFile.name);
+        axios.post('http://localhost:5001/api/uploads', fd, {
+            onUploadProgress: ProgressEvent => {
+                console.log('Upload Progress: ' + Math.round(ProgressEvent.loaded / ProgressEvent.total * 100))
+            }
+        }).then(res => {
+            console.log(res);
+            if (res.status === 200){
+                let newQuestions = Object.assign([], this.state.questions);
+                newQuestions[this.state.modalPage - 1].supportPath = res.data.path;
+                this.setState({
+                    questions: newQuestions
+                });
+            }
+        });
+        
+        
+        //this.props.addNewUpload(this.state.selectedFile, this.state.supportType);
+    }
+
+    defineSupport(event){
+        event.preventDefault();
+        console.log('choice', event.target.id);
+        this.setState({
+            supportType: event.target.id
+        })
+    }
+
+    fileSelectedHandler(event) {
+        event.preventDefault();
+        console.log('choice', event.target.files[0]);
+        var value = event.target.files[0];
+        console.log('value selectedFile',event.target.files[0])
+        this.setState({
+            selectedFile: event.target.files[0]
+        })
     }
 
 
@@ -238,8 +288,8 @@ class ListRessource extends Component {
                                                         {((ressource.title !== "") && (ressource.order !== "") && (ressource.questions.length > 0))
                                                             &&
                                                             <div className="right">
-                                                                <input type="checkbox" id="shareRessource" name="shareRessource" onChange={(event) => this.handleChange(event,index)} checked={this.state.shareRessource} />
-                                                               <label>
+                                                                <input type="checkbox" id="shareRessource" name="shareRessource" onChange={(event) => this.handleChange(event, index)} checked={this.state.shareRessource} />
+                                                                <label>
                                                                     Partager cette ressource
                                                                 </label>
                                                                 <Button onClick={() => this.saveModal(ressource, index)}>
@@ -256,7 +306,7 @@ class ListRessource extends Component {
                                                 <i className="material-icons" onClick={() => this.editRessource(ressource)}>edit</i>
                                             </span>}>
                                             {(this.props.currentRessource !== null) &&
-                                                <div key={ressource._id}>{React.createElement(components[`${ressource.typeOfRessource.charAt(0).toUpperCase()}${ressource.typeOfRessource.substr(1).toLowerCase()}Component`], { title: this.state.title, description: this.state.description, order: this.state.order, questions: this.state.questions, modalPage: this.state.modalPage, handleChange: this.handleChange, nextQuestion: this.nextQuestion, previousQuestion: this.previousQuestion, addAnswer: this.addAnswer, saveModal: this.saveModal, cancelModal: this.cancelModal }, null)}</div>
+                                                <div key={ressource._id}>{React.createElement(components[`${ressource.typeOfRessource.charAt(0).toUpperCase()}${ressource.typeOfRessource.substr(1).toLowerCase()}Component`], { title: this.state.title, description: this.state.description, order: this.state.order, questions: this.state.questions, modalPage: this.state.modalPage, handleChange: this.handleChange, nextQuestion: this.nextQuestion, previousQuestion: this.previousQuestion, addAnswer: this.addAnswer, saveModal: this.saveModal, cancelModal: this.cancelModal, addNewUpload: this.props.addNewUpload, supportType: this.state.supportType, defineSupport: this.defineSupport, fileUploadHandler: this.fileUploadHandler, fileSelectedHandler: this.fileSelectedHandler }, null)}</div>
                                             }
                                         </Modal>
                                         <Modal
@@ -323,6 +373,9 @@ const mapDispatchToProps = dispatch => {
         },
         deleteRessource: (ressource) => {
             dispatch(deleteRessource(ressource))
+        },
+        addNewUpload: (upload, typeOf) => {
+            dispatch(addNewUpload(upload, typeOf))
         }
     }
 }
