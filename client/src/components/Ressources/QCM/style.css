@@ -73,7 +73,7 @@ label {
 }
 
 .btn.addAnswer{
-    background-color: #2c1e36;
+    background-color: #2c1e36 !important;
 }
 
 .btn.addAnswer:hover{
@@ -91,6 +91,7 @@ label {
 .modal{
     width: 90% !important;
     max-height: 80% !important;
+    min-height: 70% !important;
 }
 
 #listRessource{
@@ -125,4 +126,15 @@ label {
 .btn.choiceSupport.active{
     background-color:  #49c2ff !important;
     color: white !important;
+}
+
+.center{
+    display: block;
+    margin-left: auto;
+    margin-right: auto
+}
+
+.error {
+    color: red;
+    text-align: left;
 }

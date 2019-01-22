@@ -22,7 +22,8 @@ class AddRessource extends Component {
             author: localStorage.token.username,
             adding: this.props.adding,
             supportType: "",
-            selectedFile: null
+            selectedFile: null,
+            error: ""
         }
         this.defineSupport = this.defineSupport.bind(this);
         this.fileUploadHandler = this.fileUploadHandler.bind(this);
@@ -81,7 +82,9 @@ class AddRessource extends Component {
                     supportPath: "",
                     question: "",
                     answers: []
-                }]
+                }],
+                defineSupport: "",
+                selectedFile: ""
             }, function () {
                 console.log('setState',this.state.questions)
                 this.setState({
@@ -160,26 +163,72 @@ class AddRessource extends Component {
     fileUploadHandler(event) {
         event.preventDefault();
         const fd = new FormData();
-        fd.append('uploadFile', this.state.selectedFile, this.state.selectedFile.name);
-        axios.post('http://localhost:5001/api/uploads', fd, {
-            onUploadProgress: ProgressEvent => {
-                console.log('Upload Progress: ' + Math.round(ProgressEvent.loaded / ProgressEvent.total * 100))
-            }
-        }).then(res => {
-            console.log(res);
-            if (res.status === 200){
-                let newQuestions = Object.assign([], this.state.questions);
-                newQuestions[this.state.modalPage - 1].supportPath = res.data.path;
-                this.setState({
-                    questions: newQuestions
-                },function(){
-                    console.log('après upload',this.state.questions)
+        console.log('avant switch',this.state.supportType);
+        switch(this.state.supportType){
+            case ("image"):
+                fd.append('uploadImage', this.state.selectedFile, this.state.selectedFile.name);
+                axios.post('http://localhost:5001/api/uploadImage', fd, {
+                    onUploadProgress: ProgressEvent => {
+                        console.log('Upload Progress: ' + Math.round(ProgressEvent.loaded / ProgressEvent.total * 100))
+                    }
+                }).then(res => {
+                    console.log(res);
+                    if (res.status === 200){
+                        if (res.data.error){
+                            this.setState({
+                                error:  res.data.error.err,
+                                selectedFile: null
+                            })
+                        } else {
+                            let newQuestions = Object.assign([], this.state.questions);
+                            let path = res.data.path;
+                            console.log('path avant',path);
+                            path = res.data.file.path.split('/');
+                            path = path[2]+'/'+path[3];
+                            console.log("path après",path)
+                            newQuestions[this.state.modalPage - 1].supportPath = path;
+                            newQuestions[this.state.modalPage - 1].supportType = this.state.supportType;
+                            this.setState({
+                                questions: newQuestions
+                            });
+                        }
+                    }
+                }).catch(err => {
+                    console.log('err',err);
                 });
-            }
-        });
-        
-        
-        //this.props.addNewUpload(this.state.selectedFile, this.state.supportType);
+            case('video'):
+                console.log('video')
+                fd.append('uploadVideo', this.state.selectedFile, this.state.selectedFile.name);
+                axios.post('http://localhost:5001/api/uploadVideo', fd, {
+                    onUploadProgress: ProgressEvent => {
+                        console.log('Upload Progress: ' + Math.round(ProgressEvent.loaded / ProgressEvent.total * 100))
+                    }
+                }).then(res => {
+                    console.log(res);
+                    if (res.status === 200){
+                        if (res.data.error){
+                            this.setState({
+                                error:  res.data.error.err,
+                                selectedFile: null
+                            })
+                        } else {
+                            let newQuestions = Object.assign([], this.state.questions);
+                            let path = res.data.path;
+                            console.log('path avant',path);
+                            path = res.data.file.path.split('/');
+                            path = path[2]+'/'+path[3];
+                            console.log("path après",path)
+                            newQuestions[this.state.modalPage - 1].supportPath = path;
+                            newQuestions[this.state.modalPage - 1].supportType = this.state.supportType;
+                            this.setState({
+                                questions: newQuestions
+                            });
+                        }
+                    }
+                }).catch(err => {
+                    console.log('err',err);
+                });
+        }
     }
 
     defineSupport(event){
@@ -236,7 +285,7 @@ class AddRessource extends Component {
                         }
                         header='Questionnaire à choix multiples'
                         trigger={<div><img src="/images/qcm_logo.png" alt="logo QCM" id='QCM' onClick={this.selectTypeOfRessource} /><div>QCM</div></div>}>
-                        <QCM title={this.state.title} description={this.state.description} order={this.state.order} questions={this.state.questions} modalPage={this.state.modalPage} supportType={this.state.supportType} selectedFile={this.state.selectedFile} defineSupport={this.defineSupport} fileSelectedHandler={this.fileSelectedHandler} fileUploadHandler={this.fileUploadHandler} handleChange={this.handleChange} nextQuestion={this.nextQuestion} previousQuestion={this.previousQuestion} addAnswer={this.addAnswer} />
+                        <QCM title={this.state.title} description={this.state.description} order={this.state.order} questions={this.state.questions} modalPage={this.state.modalPage} supportType={this.state.supportType} selectedFile={this.state.selectedFile} defineSupport={this.defineSupport} fileSelectedHandler={this.fileSelectedHandler} fileUploadHandler={this.fileUploadHandler} handleChange={this.handleChange} nextQuestion={this.nextQuestion} previousQuestion={this.previousQuestion} addAnswer={this.addAnswer} error={this.state.error} />
                     </Modal>
                 </SideNavItem>
                 <SideNavItem className="typeOfRessource">

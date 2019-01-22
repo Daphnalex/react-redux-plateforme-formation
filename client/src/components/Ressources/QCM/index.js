@@ -8,7 +8,7 @@ export default class QCM extends Component {
 
 
   render() {
-    console.log('QCM questions',this.props.questions)
+    console.log('QCM questions',this.props.questions[this.props.modalPage - 1])
     return (
       <div>
         {(this.props.modalPage === 0) ?
@@ -64,20 +64,33 @@ export default class QCM extends Component {
                   }
                   {(this.props.supportType === "image") &&
                     <div>
-                      <input type='file' name='uploadFile' id='file' form='saveSupportFile' onChange={(event) => this.props.fileSelectedHandler(event)} />
+                      <input type='file' name='uploadImage' id='file' form='saveSupportFile' onChange={(event) => this.props.fileSelectedHandler(event)} />
                       <Button onClick={(event) => this.props.fileUploadHandler(event)}><i className="material-icons">cloud_upload</i> Télécharger</Button>
                     </div>
                   }
+                  <br/>
                   {(this.props.supportType === "video") &&
-                    <div>Upload video ici !</div>
-                  }
-                  {(this.props.questions[this.props.modalPage - 1].supportType === 'image' && this.props.questions[this.props.modalPage - 1].supportPath !== "") &&
-                   <div>
-                     Rendu : <br/>
-                    <img src={require(this.props.selectedFile)} alt="image support" />
+                    <div>
+                      <input type='file' name='uploadVideo' id='file' form='saveSupportFile' onChange={(event) => this.props.fileSelectedHandler(event)} />
+                      <Button onClick={(event) => this.props.fileUploadHandler(event)}><i className="material-icons">cloud_upload</i> Télécharger</Button>
                     </div>
                   }
-                  
+                  <br/>
+                  {(this.props.questions[this.props.modalPage - 1].supportType === 'image' && this.props.questions[this.props.modalPage - 1].supportPath !== "") &&
+                   <div>
+                    <img className="supportImage center" src={this.props.questions[this.props.modalPage - 1].supportPath} alt="image support" />
+                    </div>
+                  }
+                  {(this.props.questions[this.props.modalPage - 1].supportType === 'video' && this.props.questions[this.props.modalPage - 1].supportPath !== "") &&
+                    <video className="supportVideo center" width="800" height="400" controls>
+                      <source src={this.props.questions[this.props.modalPage - 1].supportPath} type="video/mp4"/>
+                    </video>
+                  }
+                  {(this.props.error && this.props.selectedFile === null)&&
+                    <div className='error'>
+                      <i>{this.props.error}</i>
+                    </div>
+                  }
                 </Row>
               </Row>
               <Row>
@@ -86,7 +99,6 @@ export default class QCM extends Component {
                   <input id="question" type="text" value={this.props.questions[this.props.modalPage - 1].question} onChange={(event) => this.props.handleChange(event, null)} />
                 </label>
               </Row>
-              <Button className="addAnswer" onClick={this.props.addAnswer}>Ajouter une réponse</Button>
               <Row className="answers"><p>Propositions de réponses :</p>
                 <i>Saisissez vos propositions de réponses et cochez les réponses justes.</i>
                 <br /><br />
@@ -103,6 +115,9 @@ export default class QCM extends Component {
                       </Row>
                     )))}
                   </div>}
+              </Row>
+              <Row>
+                <Button className="addAnswer center" onClick={this.props.addAnswer}>Ajouter une réponse</Button>
               </Row>
               <Row>
                 {(this.props.modalPage > 0)

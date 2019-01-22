@@ -22,7 +22,8 @@ class ListRessource extends Component {
             cancel: false,
             edition: false,
             supportType: "",
-            selectedFile: ""
+            selectedFile: "",
+            error: ""
         }
         this.defineSupport = this.defineSupport.bind(this);
         this.fileUploadHandler = this.fileUploadHandler.bind(this);
@@ -210,24 +211,40 @@ class ListRessource extends Component {
     fileUploadHandler(event) {
         event.preventDefault();
         const fd = new FormData();
-        fd.append('uploadFile', this.state.selectedFile, this.state.selectedFile.name);
-        axios.post('http://localhost:5001/api/uploads', fd, {
-            onUploadProgress: ProgressEvent => {
-                console.log('Upload Progress: ' + Math.round(ProgressEvent.loaded / ProgressEvent.total * 100))
-            }
-        }).then(res => {
-            console.log(res);
-            if (res.status === 200){
-                let newQuestions = Object.assign([], this.state.questions);
-                newQuestions[this.state.modalPage - 1].supportPath = res.data.path;
-                this.setState({
-                    questions: newQuestions
+        console.log('avant switch',this.state.supportType);
+        switch(this.state.supportType){
+            case ("image"):
+                fd.append('uploadImage', this.state.selectedFile, this.state.selectedFile.name);
+                axios.post('http://localhost:5001/api/uploadImage', fd, {
+                    onUploadProgress: ProgressEvent => {
+                        console.log('Upload Progress: ' + Math.round(ProgressEvent.loaded / ProgressEvent.total * 100))
+                    }
+                }).then(res => {
+                    console.log(res);
+                    if (res.status === 200){
+                        if (res.data.error){
+                            this.setState({
+                                error:  res.data.error.err,
+                                selectedFile: null
+                            })
+                        } else {
+                            let newQuestions = Object.assign([], this.state.questions);
+                            let path = res.data.path;
+                            console.log('path avant',path);
+                            path = res.data.file.path.split('/');
+                            path = path[2]+'/'+path[3];
+                            console.log("path après",path)
+                            newQuestions[this.state.modalPage - 1].supportPath = path;
+                            newQuestions[this.state.modalPage - 1].supportType = this.state.supportType;
+                            this.setState({
+                                questions: newQuestions
+                            });
+                        }
+                    }
+                }).catch(err => {
+                    console.log('err',err);
                 });
-            }
-        });
-        
-        
-        //this.props.addNewUpload(this.state.selectedFile, this.state.supportType);
+        }
     }
 
     defineSupport(event){

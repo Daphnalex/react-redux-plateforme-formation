@@ -25,7 +25,6 @@ class Ressources extends Component {
                     <AddRessource addNewRessource={this.props.addNewRessource} getAllRessources={this.props.getAllRessources} adding={this.state.adding}/>
                 </Col>
                 <Col s={12} m={9}>
-                    <img src={require("../../../client/public/uploads/426b55756905130c10b121c092954493")} />
                     <ListRessources getAllRessources={this.props.getAllRessources} currentRessource={this.props.currentRessource} getRessource={this.props.getRessource} editRessource={this.props.editRessource}/>
                 </Col>
             </Row>
