@@ -2,10 +2,22 @@ import React, { Component } from 'react'
 import { Row, Col, Button } from "react-materialize";
 import Iframe from "react-iframe";
 import './style.css';
-
+import TinyMCE from 'react-tinymce';
 
 export default class QCM extends Component {
 
+  constructor(props){
+    super(props);
+  }
+
+  // componentWillReceiveProps(nextProps){
+  //   if (this.props.questions.length > 0){
+  //     this.id = this.props.questions[this.props.modalPage - 1]._id;
+  //     console.log('nextProps',nextProps)
+  //     console.log('TinyMCE');
+  //     TinyMCE.EditorManager.get(this.id).setContent("coucou")
+  //   }
+  // }
 
   render() {
     console.log('QCM questions',this.props.questions[this.props.modalPage - 1])
@@ -59,20 +71,30 @@ export default class QCM extends Component {
                   </Col>
                 </Row>
                 <Row>
-                  {(this.props.supportType === "text") &&
-                    <div>Editeur de texte à mettre ici !!!!</div>
-                  }
-                  {(this.props.supportType === "image") &&
+                  {(this.props.questions[this.props.modalPage - 1].supportType === "image") &&
                     <div>
                       <input type='file' name='uploadImage' id='file' form='saveSupportFile' onChange={(event) => this.props.fileSelectedHandler(event)} />
                       <Button onClick={(event) => this.props.fileUploadHandler(event)}><i className="material-icons">cloud_upload</i> Télécharger</Button>
                     </div>
                   }
                   <br/>
-                  {(this.props.supportType === "video") &&
+                  {(this.props.questions[this.props.modalPage - 1].supportType === "video") &&
                     <div>
                       <input type='file' name='uploadVideo' id='file' form='saveSupportFile' onChange={(event) => this.props.fileSelectedHandler(event)} />
                       <Button onClick={(event) => this.props.fileUploadHandler(event)}><i className="material-icons">cloud_upload</i> Télécharger</Button>
+                    </div>
+                  }
+                  {(this.props.questions[this.props.modalPage - 1].supportType === "text") &&
+                    <div>
+                      <div>{this.props.questions[this.props.modalPage - 1].supportPath}</div>
+                      <TinyMCE id={this.props.questions[this.props.modalPage - 1]._id}
+                        initialValue={this.props.questions[this.props.modalPage - 1].supportPath}
+                        config={{
+                          plugins: 'autolink link image lists print preview',
+                          toolbar: 'undo redo | bold italic | alignleft aligncenter alignright'
+                        }}
+                        onChange={this.props.handleEditorChange}
+                      />
                     </div>
                   }
                   <br/>
