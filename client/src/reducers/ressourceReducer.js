@@ -24,7 +24,7 @@ const initialState = {
 }
 
 export default function fetchRessourcesReducer(state = initialState, action){
-    console.log('action payload',action.payload)
+    //console.log('action payload',action.payload)
     switch(action.type){
         case GET_ONE_RESSOURCE_BEGIN:
             return {
@@ -87,8 +87,8 @@ export default function fetchRessourcesReducer(state = initialState, action){
                 ...state.ressources[action.payload.index],
                 ...action.payload.ressource
             }
-            console.log('in reducer',state.ressources);
-            console.log('ressource envoyé',action.payload.ressource)
+            // console.log('in reducer',state.ressources);
+            // console.log('ressource envoyé',action.payload.ressource)
             return {
                 ...state,
                 loading: false,
@@ -112,7 +112,7 @@ export default function fetchRessourcesReducer(state = initialState, action){
                     state.ressources.splice(i,1)
                 }
             })
-            console.log("after delete",state.ressources)
+            //console.log("after delete",state.ressources)
             return {
                 ressources: state.ressources,
                 loading: false,

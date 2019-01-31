@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Row, Col} from 'react-materialize';
-import AddRessource from './add';
-import ListRessources from './list';
+import AddRessource from '../components/Ressources/AddRessource';
+import ListRessources from '../components/Ressources/ListRessource';
 import './style.css';
 
 
@@ -14,11 +14,13 @@ class Ressources extends Component {
     }
 
     componentWillReceiveProps(nextProps){
-        console.log('nextprops index',nextProps);
+        //console.log('nextprops index',nextProps);
     }
 
+    
+
     render() {
-        console.log('index render',this.props.currentRessource)
+        //console.log('index render',this.props.currentRessource)
         return (
             <Row>
                 <Col s={12} m={3}>

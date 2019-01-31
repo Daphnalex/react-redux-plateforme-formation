@@ -3,7 +3,7 @@ import './App.css';
 import { Route, Router } from 'react-router-dom';
 import Login from './components/Login';
 import Home from './components/Home';
-import Ressource from './components/Ressources';
+import Ressource from './containers/ressource-page';
 import NavBar from './components/NavBar';
 import history from "./helpers/history";
 import {connect} from 'react-redux';

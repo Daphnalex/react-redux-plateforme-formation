@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from "react-redux";
 import { Row, Col, SideNav, SideNavItem, Modal, Button } from 'react-materialize';
-import QcmComponent from "./QCM";
-import QcuComponent from "./QCU";
+import QChoixComponent from "./Questionnaires/QChoix";
 import $ from 'jquery';
 import { getAllRessources, getRessource, editRessource, deleteRessource } from "../../actions/ressourceActions";
 import { addNewUpload } from '../../actions/uploadActions';
@@ -13,6 +12,7 @@ class ListRessource extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            ressourceId: "",
             title: "",
             description: "",
             order: "",
@@ -23,7 +23,8 @@ class ListRessource extends Component {
             edition: false,
             supportType: "",
             selectedFile: "",
-            error: ""
+            error: "",
+            activeEditor: false
         }
         this.defineSupport = this.defineSupport.bind(this);
         this.fileUploadHandler = this.fileUploadHandler.bind(this);
@@ -33,24 +34,30 @@ class ListRessource extends Component {
 
 
     componentDidMount() {
-        console.log('did mount')
+        //console.log('did mount')
         this.props.getAllRessources();
     }
 
     componentDidUpdate() {
+        console.log('ressourceId',this.state.ressourceId);
+        
         if (this.state.edition === true && this.props.currentRessource !== null) {
-            console.log('edition', this.props);
-            this.setState({
-                title: this.props.currentRessource.title,
-                description: this.props.currentRessource.description,
-                order: this.props.currentRessource.order,
-                questions: this.props.currentRessource.questions,
-                modalPage: 0,
-                shareRessource: this.props.currentRessource.shareRessource,
-                edition: false,
-                supportType: this.props.currentRessource.supportType,
-                selectedFile: this.props.currentRessource.selectedFile
-            })
+            console.log('current id',this.props.currentRessource._id);
+            if (this.props.currentRessource._id === this.state.ressourceId){
+                console.log('edition', this.props.currentRessource);
+                this.setState({
+                    ressourceId: this.props.currentRessource.ressourceId,
+                    title: this.props.currentRessource.title,
+                    description: this.props.currentRessource.description,
+                    order: this.props.currentRessource.order,
+                    questions: this.props.currentRessource.questions,
+                    modalPage: 0,
+                    shareRessource: this.props.currentRessource.shareRessource,
+                    edition: false,
+                    supportType: this.props.currentRessource.supportType,
+                    selectedFile: this.props.currentRessource.selectedFile
+                })
+            }
         }
 
     }
@@ -58,7 +65,7 @@ class ListRessource extends Component {
     handleChange = (event, index) => {
         //event.preventDefault();
         let newQuestions = Object.assign([], this.state.questions);
-        console.log('event.target.id', event.target.id)
+        //console.log('event.target.id', event.target.id)
         switch (event.target.id) {
             case 'answer':
                 //change the state of answer according to his index
@@ -68,7 +75,7 @@ class ListRessource extends Component {
                 });
                 break;
             case 'support':
-                console.log('support', event.target.value)
+                //console.log('support', event.target.value)
                 //change the state of support according to his index
                 newQuestions[this.state.modalPage - 1].support = event.target.value;
                 this.setState({
@@ -89,7 +96,7 @@ class ListRessource extends Component {
                 });
                 break;
             case 'shareRessource':
-                console.log('dans switch shareRessource', event.target.checked);
+                //console.log('dans switch shareRessource', event.target.checked);
                 this.setState({
                     shareRessource: event.target.checked
                 })
@@ -148,10 +155,21 @@ class ListRessource extends Component {
     }
 
     cancelModal = (ressource, index) => {
-        console.log('ressource', ressource);
-        this.props.getRessource(ressource);
+        //console.log('ressource', ressource);
         this.setState({
-            cancel: true
+            ressourceId: "",
+            title: "",
+            description: "",
+            order: "",
+            questions: [],
+            modalPage: 0,
+            shareRessource: false,
+            cancel: true,
+            edition: false,
+            supportType: "",
+            selectedFile: "",
+            error: "",
+            activeEditor: false
         }, function () {
             $(document).ready(function () {
                 window.$('.modal').modal('close');
@@ -160,7 +178,7 @@ class ListRessource extends Component {
     }
 
     saveModal = (ressource, index) => {
-        console.log('ressource', this.state)
+        //console.log('ressource', this.state)
         var newRessource = {
             title: this.state.title,
             description: this.state.description,
@@ -179,8 +197,16 @@ class ListRessource extends Component {
     }
 
     editRessource = (ressource) => {
+        console.log('ressource',ressource);
         this.props.getRessource(ressource);
         this.setState({
+            ressourceId: ressource._id,
+            title: ressource.title,
+            description: ressource.description,
+            order: ressource.order,
+            questions: ressource.questions,
+            modalPage: 1,
+            shareRessource: ressource.shareRessource,
             edition: true
         })
     }
@@ -208,19 +234,19 @@ class ListRessource extends Component {
     }
 
 
-    fileUploadHandler(event) {
+    fileUploadHandler = (event) => {
         event.preventDefault();
         const fd = new FormData();
-        console.log('avant switch',this.state.supportType);
+        //console.log('avant switch',this.state.supportType);
         switch(this.state.supportType){
             case ("image"):
                 fd.append('uploadImage', this.state.selectedFile, this.state.selectedFile.name);
                 axios.post('http://localhost:5001/api/uploadImage', fd, {
                     onUploadProgress: ProgressEvent => {
-                        console.log('Upload Progress: ' + Math.round(ProgressEvent.loaded / ProgressEvent.total * 100))
+                        //console.log('Upload Progress: ' + Math.round(ProgressEvent.loaded / ProgressEvent.total * 100))
                     }
                 }).then(res => {
-                    console.log(res);
+                    //console.log(res);
                     if (res.status === 200){
                         if (res.data.error){
                             this.setState({
@@ -230,10 +256,10 @@ class ListRessource extends Component {
                         } else {
                             let newQuestions = Object.assign([], this.state.questions);
                             let path = res.data.path;
-                            console.log('path avant',path);
+                            //console.log('path avant',path);
                             path = res.data.file.path.split('/');
                             path = path[2]+'/'+path[3];
-                            console.log("path après",path)
+                            //console.log("path après",path)
                             newQuestions[this.state.modalPage - 1].supportPath = path;
                             newQuestions[this.state.modalPage - 1].supportType = this.state.supportType;
                             this.setState({
@@ -242,35 +268,46 @@ class ListRessource extends Component {
                         }
                     }
                 }).catch(err => {
-                    console.log('err',err);
+                    //console.log('err',err);
                 });
         }
     }
 
-    defineSupport(event){
+    defineSupport = (event) => {
         event.preventDefault();
-        console.log('choice', event.target.id);
+        //console.log('choice', event.target.id);
         this.setState({
             supportType: event.target.id
         })
     }
 
-    fileSelectedHandler(event) {
+    fileSelectedHandler = (event) => {
         event.preventDefault();
-        console.log('choice', event.target.files[0]);
+        //console.log('choice', event.target.files[0]);
         var value = event.target.files[0];
-        console.log('value selectedFile',event.target.files[0])
+        //console.log('value selectedFile',event.target.files[0])
         this.setState({
             selectedFile: event.target.files[0]
         })
     }
 
+    handleEditorChange = (event) => {
+        event.preventDefault();
+        //console.log("onChange fired with event info: ", event);
+        var newContent = event.editor.getData();
+        let newQuestions = Object.assign([], this.state.questions);
+        newQuestions.supportPath = newContent;
+        this.setState({
+            questions: newQuestions
+        })
+    }
+
 
     render() {
-        console.log('render', this.props.ressources)
+        //console.log('render', this.props.ressources)
         const components = {
-            QcmComponent: QcmComponent,
-            QcuComponent: QcuComponent
+            QcmComponent: QChoixComponent,
+            QcuComponent: QChoixComponent
         };
 
         return (

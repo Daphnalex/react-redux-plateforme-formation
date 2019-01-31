@@ -27,7 +27,7 @@ class NavBar extends Component {
     }
 }
 const mapStateToProps = (state) => {
-    console.log('state dans Navbar',state);
+    //console.log('state dans Navbar',state);
     return {
         localStorage: state.localStorage
     }

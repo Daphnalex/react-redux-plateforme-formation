@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { Row, Col, SideNav, SideNavItem, Modal, Button } from 'react-materialize';
-import QCM from "./QCM";
-import QCU from "./QCU";
+import QChoix from "./Questionnaires/QChoix";
 import $ from 'jquery';
 import {connect} from "react-redux";
 import { addNewRessource } from "../../actions/ressourceActions";
@@ -23,7 +22,8 @@ class AddRessource extends Component {
             adding: this.props.adding,
             supportType: "",
             selectedFile: null,
-            error: ""
+            error: "",
+            activeEditor: false
         }
         this.defineSupport = this.defineSupport.bind(this);
         this.fileUploadHandler = this.fileUploadHandler.bind(this);
@@ -86,6 +86,7 @@ class AddRessource extends Component {
                     error: "",
                     answers: []
                 }],
+                activeEditor: false,
                 defineSupport: "",
                 selectedFile: "",
                 supportType: ""
@@ -97,7 +98,8 @@ class AddRessource extends Component {
             })
         } else {
             this.setState({
-                modalPage: this.state.modalPage + 1
+                modalPage: this.state.modalPage + 1,
+                activeEditor: false,
             })
         }
     }
@@ -105,7 +107,8 @@ class AddRessource extends Component {
     previousQuestion = (event) => {
         event.preventDefault();
         this.setState({
-            modalPage: this.state.modalPage - 1
+            modalPage: this.state.modalPage - 1,
+            activeEditor: false
         })
     }
 
@@ -170,7 +173,7 @@ class AddRessource extends Component {
         });
     }
 
-    fileUploadHandler(event) {
+    fileUploadHandler = (event) => {
         event.preventDefault();
         const fd = new FormData();
         console.log('avant switch',this.state.supportType);
@@ -184,7 +187,9 @@ class AddRessource extends Component {
                 }).then(res => {
                     console.log(res);
                     if (res.status === 200){
+                        console.log('status 200');
                         if (res.data.error){
+                            console.log(res.data.error)
                             this.setState({
                                 error:  res.data.error.err,
                                 selectedFile: null
@@ -218,8 +223,9 @@ class AddRessource extends Component {
                     console.log(res);
                     if (res.status === 200){
                         if (res.data.error){
+                            console.log('res.data.error',res.data.error)
                             this.setState({
-                                error:  res.data.error.err,
+                                error:  res.data.error.message,
                                 selectedFile: null
                             })
                         } else {
@@ -243,7 +249,7 @@ class AddRessource extends Component {
         }
     }
 
-    defineSupport(event){
+    defineSupport = (event) => {
         event.preventDefault();
         let newQuestions = Object.assign([], this.state.questions);
         newQuestions[this.state.modalPage - 1].supportType = event.target.id;
@@ -251,26 +257,35 @@ class AddRessource extends Component {
         this.setState({
             supportType: event.target.id,
             questions: newQuestions
-        })
+        });
+        if (event.target.id==="text"){
+            this.setState({
+                activeEditor: true
+            })
+        }
     }
 
-    fileSelectedHandler(event) {
+
+    fileSelectedHandler = (event) => {
         event.preventDefault();
         console.log('choice', event.target.files[0]);
         var value = event.target.files[0];
-        console.log('value selectedFile',event.target.files[0])
+        console.log('value selectedFile',event.target.files[0]);
         this.setState({
             selectedFile: event.target.files[0]
         })
     }
 
-    handleEditorChange(event) {
-        event.preventDefault();
-        let newQuestions = Object.assign({}, this.state.questions);
-        newQuestions[this.state.modalPage - 1].supportPath = event.target.getContent();
+    handleEditorChange = (event) => {
+        console.log("onChange fired with event info: ", event);
+        var newContent = event.editor.getData();
+        console.log('new content',newContent);
+        let newQuestions = Object.assign([], this.state.questions);
+        console.log('supportPath avant',newQuestions[this.state.modalPage - 1].supportPath);
+        newQuestions[this.state.modalPage - 1].supportPath = newContent;
         this.setState({
             newQuestions
-        });
+        })
     }
 
     render() {
@@ -306,14 +321,14 @@ class AddRessource extends Component {
                         }
                         header='Questionnaire à choix multiples'
                         trigger={<div><img src="/images/qcm_logo.png" alt="logo QCM" id='QCM' onClick={this.selectTypeOfRessource} /><div>QCM</div></div>}>
-                        <QCM title={this.state.title} description={this.state.description} order={this.state.order} questions={this.state.questions} modalPage={this.state.modalPage} supportType={this.state.supportType} selectedFile={this.state.selectedFile} defineSupport={this.defineSupport} fileSelectedHandler={this.fileSelectedHandler} fileUploadHandler={this.fileUploadHandler} handleChange={this.handleChange} nextQuestion={this.nextQuestion} previousQuestion={this.previousQuestion} addAnswer={this.addAnswer} error={this.state.error} handleEditorChange={this.handleEditorChange}/>
+                        <QChoix typeButton="checkbox" activeEditor={this.state.activeEditor} title={this.state.title} description={this.state.description} order={this.state.order} questions={this.state.questions} modalPage={this.state.modalPage} supportType={this.state.supportType} selectedFile={this.state.selectedFile} defineSupport={this.defineSupport} fileSelectedHandler={this.fileSelectedHandler} fileUploadHandler={this.fileUploadHandler} handleChange={this.handleChange} nextQuestion={this.nextQuestion} previousQuestion={this.previousQuestion} addAnswer={this.addAnswer} error={this.state.error} handleEditorChange={this.handleEditorChange}/>
                     </Modal>
                 </SideNavItem>
                 <SideNavItem className="typeOfRessource">
                     <Modal
                         header='Questionnaire à choix uniques'
                         trigger={<div><img src="/images/qcu_logo.png" alt="logo QCU" /><div>QCU</div></div>}>
-                        <QCU />
+                        <QChoix typeButton="radio" activeEditor={this.state.activeEditor} title={this.state.title} description={this.state.description} order={this.state.order} questions={this.state.questions} modalPage={this.state.modalPage} supportType={this.state.supportType} selectedFile={this.state.selectedFile} defineSupport={this.defineSupport} fileSelectedHandler={this.fileSelectedHandler} fileUploadHandler={this.fileUploadHandler} handleChange={this.handleChange} nextQuestion={this.nextQuestion} previousQuestion={this.previousQuestion} addAnswer={this.addAnswer} error={this.state.error} handleEditorChange={this.handleEditorChange}/>
                     </Modal>
                 </SideNavItem>
             </SideNav>

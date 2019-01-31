@@ -15,15 +15,15 @@ export function getAllRessources() {
 }
 
 export function addNewRessource(ressource) {
-    console.log('add action',ressource)
+    //console.log('add action',ressource)
     return dispatch => {
         dispatch(addRessourceBegin());
         var token = localStorage.token;
         token = jwtDecode(token);
-        console.log('token decrypt',token);
+        //console.log('token decrypt',token);
         ressourceService.addRessource(ressource,token._id)
             .then(ressource => {
-                console.log('ressouce dans la function then',ressource)
+                //console.log('ressouce dans la function then',ressource)
                 dispatch(addRessourceSuccess(ressource));
             }, error => {
                 dispatch(addRessourceFailure(error))
@@ -32,10 +32,10 @@ export function addNewRessource(ressource) {
 }
 
 export function getRessource(ressource){
-    console.log('get ressource action');
+    //console.log('get ressource action');
     return dispatch => {
         dispatch(getRessourceBegin());
-        console.log('ressource in action',ressource)
+        //console.log('ressource in action',ressource)
         ressourceService.getRessource(ressource._id)
             .then(ressource => {
                 console.log('ressource dans action',ressource)
@@ -47,12 +47,12 @@ export function getRessource(ressource){
 }
 
 export function editRessource(ressource,index){
-    console.log('edit ressource action',ressource);
+    //console.log('edit ressource action',ressource);
     return dispatch => {
         dispatch(editRessourceBegin());
         ressourceService.editRessource(ressource)
             .then(ressource => {
-                console.log("ressource dans le then",ressource)
+                //console.log("ressource dans le then",ressource)
                 dispatch(editRessourceSuccess(ressource,index));
             }, error => {
                 dispatch(editRessourceFailure(error))
@@ -61,12 +61,12 @@ export function editRessource(ressource,index){
 }
 
 export function deleteRessource(ressource){
-    console.log('delete ressource action',ressource);
+    //console.log('delete ressource action',ressource);
     return dispatch => {
         dispatch(deleteRessourceBegin());
         ressourceService.deleteRessource(ressource._id)
             .then((result) => {
-                console.log('index dans action',result.ressource)
+                //console.log('index dans action',result.ressource)
                 dispatch(deleteRessourceSuccess(result.ressource));
             }, error => {
                 dispatch(deleteRessourceFailure(error))

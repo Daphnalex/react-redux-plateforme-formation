@@ -19,6 +19,8 @@ var uploadImage = multer({
     storage: storage,
     fileFilter: function (req, file, callback) {
         var ext = path.extname(file.originalname);
+        console.log('fileFilter',file);
+        ext = ext.toLowerCase();
         if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
             return callback({err:"Le fichier téléchargé doit obligatoirement être une image"})
         }
@@ -70,8 +72,13 @@ router
 
 router.post('/uploadImage', (req, res) => {
     uploadImage(req, res, (err) => {
+        var error;
         if ( err || !req.file ){
             console.log('err',err)
+            if (err.code ==='LIMIT_FILE_SIZE'){
+                error = {err:"Image téléchargée trop grande. Taille maximale autorisée : 50Mb"};
+                return res.send({ error: error });
+            }
             return res.send({ error: err });
         } else {
             console.log("req.file",req.file)
