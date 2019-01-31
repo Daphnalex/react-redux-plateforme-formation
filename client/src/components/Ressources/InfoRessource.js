@@ -6,7 +6,7 @@ export default class InfoRessource extends Component {
     return (
     <div>
         <Row>
-          <i>Indiquer un titre à votre QCM</i>
+          <i>Indiquer un titre à votre {this.props.typeOfRessource}</i>
         </Row>
         <form>
           <Row>

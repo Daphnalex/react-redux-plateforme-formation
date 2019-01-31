@@ -11,14 +11,20 @@ export default class QCM extends Component {
 
   constructor(props) {
     super(props);
+    this.testTypeValidation = this.testTypeValidation.bind(this);
   }
 
+  testTypeValidation = () =>{
+    console.log('typeOfRessource',this.props.typeOfRessource)
+    if(this.props.typeOfRessource === "QCM") return "checkbox";
+    if(this.props.typeOfRessource === "QCU") return "radio";
+  }
 
   render() {
     return (
       <div>
         {(this.props.modalPage === 0) ?
-          <InfoRessource title={this.props.title} description={this.props.description} handleChange={this.props.handleChange} nextQuestion={this.props.nextQuestion}/>
+          <InfoRessource typeOfRessource={this.props.typeOfRessource} title={this.props.title} description={this.props.description} handleChange={this.props.handleChange} nextQuestion={this.props.nextQuestion}/>
           :
           <form>
               <ConsigneRessource order={this.props.order} handleChange={this.props.handleChange}/>
@@ -37,7 +43,7 @@ export default class QCM extends Component {
                   <div>
                     {(this.props.questions[this.props.modalPage - 1].answers.map((answer, index) => (
                       <Row key={index} className='answer'>
-                        <input type={this.props.typeButton} id="validation" name="validation" onChange={(event) => this.props.handleChange(event,index)} checked={answer.validation} />
+                        <input type={this.props.typeOfRessource === "QCM" ? "checkbox" : "radio"} id="validation" name="validation" onChange={(event) => this.props.handleChange(event,index)} checked={answer.validation} />
                         <label>
                           Réponse {index + 1}:
                           <input id="answer" type="text" value={this.props.questions[this.props.modalPage - 1].answers[index].answer} onChange={(event) => this.props.handleChange(event, index)} />

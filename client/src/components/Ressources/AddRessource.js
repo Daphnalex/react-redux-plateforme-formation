@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Row, Col, SideNav, SideNavItem, Modal, Button } from 'react-materialize';
 import QChoix from "./Questionnaires/QChoix";
 import $ from 'jquery';
-import {connect} from "react-redux";
+import { connect } from "react-redux";
 import { addNewRessource } from "../../actions/ressourceActions";
 import axios from "axios";
 
@@ -52,10 +52,10 @@ class AddRessource extends Component {
                 });
                 break;
             case 'validation':
-                console.log('event',event.target);
-                console.log('index',index)
-                if (event.target.type === "radio"){
-                    for (let i=0; i < newQuestions[this.state.modalPage - 1].answers.length;i++){
+                console.log('event', event.target);
+                console.log('index', index)
+                if (event.target.type === "radio") {
+                    for (let i = 0; i < newQuestions[this.state.modalPage - 1].answers.length; i++) {
                         newQuestions[this.state.modalPage - 1].answers[i].validation = false;
                     }
                 }
@@ -99,7 +99,7 @@ class AddRessource extends Component {
                 selectedFile: "",
                 supportType: ""
             }, function () {
-                console.log('setState',this.state.questions)
+                console.log('setState', this.state.questions)
                 this.setState({
                     modalPage: this.state.modalPage + 1
                 })
@@ -184,8 +184,8 @@ class AddRessource extends Component {
     fileUploadHandler = (event) => {
         event.preventDefault();
         const fd = new FormData();
-        console.log('avant switch',this.state.supportType);
-        switch(this.state.supportType){
+        console.log('avant switch', this.state.supportType);
+        switch (this.state.supportType) {
             case ("image"):
                 fd.append('uploadImage', this.state.selectedFile, this.state.selectedFile.name);
                 axios.post('http://localhost:5001/api/uploadImage', fd, {
@@ -194,20 +194,20 @@ class AddRessource extends Component {
                     }
                 }).then(res => {
                     console.log(res);
-                    if (res.status === 200){
+                    if (res.status === 200) {
                         console.log('status 200');
-                        if (res.data.error){
+                        if (res.data.error) {
                             console.log(res.data.error)
                             this.setState({
-                                error:  res.data.error.err,
+                                error: res.data.error.err,
                                 selectedFile: null
                             })
                         } else {
-                            console.log("res ",res.data.resizePath)
+                            console.log("res ", res.data.resizePath)
                             let newQuestions = Object.assign([], this.state.questions);
                             let path = res.data.resizePath;
-                            console.log('path avant',path);
-                            
+                            console.log('path avant', path);
+
                             newQuestions[this.state.modalPage - 1].supportPath = path;
                             newQuestions[this.state.modalPage - 1].supportType = this.state.supportType;
                             this.setState({
@@ -216,10 +216,10 @@ class AddRessource extends Component {
                         }
                     }
                 }).catch(err => {
-                    console.log('err',err);
+                    console.log('err', err);
                 });
                 break;
-            case('video'):
+            case ('video'):
                 console.log('video')
                 fd.append('uploadVideo', this.state.selectedFile, this.state.selectedFile.name);
                 axios.post('http://localhost:5001/api/uploadVideo', fd, {
@@ -228,20 +228,20 @@ class AddRessource extends Component {
                     }
                 }).then(res => {
                     console.log(res);
-                    if (res.status === 200){
-                        if (res.data.error){
-                            console.log('res.data.error',res.data.error)
+                    if (res.status === 200) {
+                        if (res.data.error) {
+                            console.log('res.data.error', res.data.error)
                             this.setState({
-                                error:  res.data.error.message,
+                                error: res.data.error.message,
                                 selectedFile: null
                             })
                         } else {
                             let newQuestions = Object.assign([], this.state.questions);
                             let path = res.data.path;
-                            console.log('path avant',path);
+                            console.log('path avant', path);
                             path = res.data.file.path.split('/');
-                            path = path[2]+'/'+path[3];
-                            console.log("path après",path)
+                            path = path[2] + '/' + path[3];
+                            console.log("path après", path)
                             newQuestions[this.state.modalPage - 1].supportPath = path;
                             newQuestions[this.state.modalPage - 1].supportType = this.state.supportType;
                             this.setState({
@@ -250,7 +250,7 @@ class AddRessource extends Component {
                         }
                     }
                 }).catch(err => {
-                    console.log('err',err);
+                    console.log('err', err);
                 });
                 break;
         }
@@ -265,7 +265,7 @@ class AddRessource extends Component {
             supportType: event.target.id,
             questions: newQuestions
         });
-        if (event.target.id==="text"){
+        if (event.target.id === "text") {
             this.setState({
                 activeEditor: true
             })
@@ -277,7 +277,7 @@ class AddRessource extends Component {
         event.preventDefault();
         console.log('choice', event.target.files[0]);
         var value = event.target.files[0];
-        console.log('value selectedFile',event.target.files[0]);
+        console.log('value selectedFile', event.target.files[0]);
         this.setState({
             selectedFile: event.target.files[0]
         })
@@ -286,9 +286,9 @@ class AddRessource extends Component {
     handleEditorChange = (event) => {
         console.log("onChange fired with event info: ", event);
         var newContent = event.editor.getData();
-        console.log('new content',newContent);
+        console.log('new content', newContent);
         let newQuestions = Object.assign([], this.state.questions);
-        console.log('supportPath avant',newQuestions[this.state.modalPage - 1].supportPath);
+        console.log('supportPath avant', newQuestions[this.state.modalPage - 1].supportPath);
         newQuestions[this.state.modalPage - 1].supportPath = newContent;
         this.setState({
             newQuestions
@@ -320,7 +320,7 @@ class AddRessource extends Component {
                                             <Button onClick={(event) => this.saveModal(event)}>
                                                 <i className="material-icons">exit_to_app</i>
                                                 Enregistrer
-                                    </Button>
+                                            </Button>
                                         </div>
                                     }
                                 </Col>
@@ -328,14 +328,39 @@ class AddRessource extends Component {
                         }
                         header='Questionnaire à choix multiples'
                         trigger={<div><img src="/images/qcm_logo.png" alt="logo QCM" id='QCM' onClick={this.selectTypeOfRessource} /><div>QCM</div></div>}>
-                        <QChoix typeButton="checkbox" activeEditor={this.state.activeEditor} title={this.state.title} description={this.state.description} order={this.state.order} questions={this.state.questions} modalPage={this.state.modalPage} supportType={this.state.supportType} selectedFile={this.state.selectedFile} defineSupport={this.defineSupport} fileSelectedHandler={this.fileSelectedHandler} fileUploadHandler={this.fileUploadHandler} handleChange={this.handleChange} nextQuestion={this.nextQuestion} previousQuestion={this.previousQuestion} addAnswer={this.addAnswer} error={this.state.error} handleEditorChange={this.handleEditorChange}/>
+                        <QChoix typeOfRessource="QCM" activeEditor={this.state.activeEditor} title={this.state.title} description={this.state.description} order={this.state.order} questions={this.state.questions} modalPage={this.state.modalPage} supportType={this.state.supportType} selectedFile={this.state.selectedFile} defineSupport={this.defineSupport} fileSelectedHandler={this.fileSelectedHandler} fileUploadHandler={this.fileUploadHandler} handleChange={this.handleChange} nextQuestion={this.nextQuestion} previousQuestion={this.previousQuestion} addAnswer={this.addAnswer} error={this.state.error} handleEditorChange={this.handleEditorChange} />
                     </Modal>
                 </SideNavItem>
                 <SideNavItem className="typeOfRessource">
                     <Modal
+                        actions={
+                            <Row className="footerBtn">
+                                <Col s={6} className="left">
+                                    <Button onClick={(event) => this.cancelModal(event)}>
+                                        Annuler
+                                    </Button>
+                                </Col>
+                                <Col s={6} className="right">
+                                    {
+                                        ((this.state.title !== "") && (this.state.order !== "") && (this.state.questions.length > 0))
+                                        &&
+                                        <div className="right">
+                                            <input type="radio" id="shareRessource" name="shareRessource" onChange={(event) => this.props.handleChange(event, null)} checked={this.state.shareRessource} />
+                                            <label>
+                                                Partager cette ressource
+                                    </label>
+                                            <Button onClick={(event) => this.saveModal(event)}>
+                                                <i className="material-icons">exit_to_app</i>
+                                                Enregistrer
+                                            </Button>
+                                        </div>
+                                    }
+                                </Col>
+                            </Row>
+                        }
                         header='Questionnaire à choix uniques'
-                        trigger={<div><img src="/images/qcu_logo.png" alt="logo QCU" /><div>QCU</div></div>}>
-                        <QChoix typeButton="radio" activeEditor={this.state.activeEditor} title={this.state.title} description={this.state.description} order={this.state.order} questions={this.state.questions} modalPage={this.state.modalPage} supportType={this.state.supportType} selectedFile={this.state.selectedFile} defineSupport={this.defineSupport} fileSelectedHandler={this.fileSelectedHandler} fileUploadHandler={this.fileUploadHandler} handleChange={this.handleChange} nextQuestion={this.nextQuestion} previousQuestion={this.previousQuestion} addAnswer={this.addAnswer} error={this.state.error} handleEditorChange={this.handleEditorChange}/>
+                        trigger={<div><img src="/images/qcu_logo.png" alt="logo QCU" id="QCU" onClick={this.selectTypeOfRessource} /><div>QCU</div></div>}>
+                        <QChoix typeOfRessource="QCU" activeEditor={this.state.activeEditor} title={this.state.title} description={this.state.description} order={this.state.order} questions={this.state.questions} modalPage={this.state.modalPage} supportType={this.state.supportType} selectedFile={this.state.selectedFile} defineSupport={this.defineSupport} fileSelectedHandler={this.fileSelectedHandler} fileUploadHandler={this.fileUploadHandler} handleChange={this.handleChange} nextQuestion={this.nextQuestion} previousQuestion={this.previousQuestion} addAnswer={this.addAnswer} error={this.state.error} handleEditorChange={this.handleEditorChange} />
                     </Modal>
                 </SideNavItem>
             </SideNav>
@@ -352,4 +377,4 @@ const mapDispatchToProps = dispatch => {
     }
 }
 
-export default connect(null, mapDispatchToProps) (AddRessource);
+export default connect(null, mapDispatchToProps)(AddRessource);
