@@ -52,7 +52,15 @@ class AddRessource extends Component {
                 });
                 break;
             case 'validation':
+                console.log('event',event.target);
+                console.log('index',index)
+                if (event.target.type === "radio"){
+                    for (let i=0; i < newQuestions[this.state.modalPage - 1].answers.length;i++){
+                        newQuestions[this.state.modalPage - 1].answers[i].validation = false;
+                    }
+                }
                 newQuestions[this.state.modalPage - 1].answers[index].validation = event.target.checked;
+                console.log(newQuestions[this.state.modalPage - 1].answers);
                 this.setState({
                     newQuestions
                 });
@@ -195,12 +203,11 @@ class AddRessource extends Component {
                                 selectedFile: null
                             })
                         } else {
+                            console.log("res ",res.data.resizePath)
                             let newQuestions = Object.assign([], this.state.questions);
-                            let path = res.data.path;
+                            let path = res.data.resizePath;
                             console.log('path avant',path);
-                            path = res.data.file.path.split('/');
-                            path = path[2]+'/'+path[3];
-                            console.log("path après",path)
+                            
                             newQuestions[this.state.modalPage - 1].supportPath = path;
                             newQuestions[this.state.modalPage - 1].supportType = this.state.supportType;
                             this.setState({

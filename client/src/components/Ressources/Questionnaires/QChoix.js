@@ -15,8 +15,6 @@ export default class QCM extends Component {
 
 
   render() {
-    console.log("error",this.props.error)
-
     return (
       <div>
         {(this.props.modalPage === 0) ?
@@ -39,7 +37,7 @@ export default class QCM extends Component {
                   <div>
                     {(this.props.questions[this.props.modalPage - 1].answers.map((answer, index) => (
                       <Row key={index} className='answer'>
-                        <input type={this.props.typeButton} id="validation" name="validation" onChange={(event) => this.props.handleChange(event, index)} checked={answer.validation} />
+                        <input type={this.props.typeButton} id="validation" name="validation" onChange={(event) => this.props.handleChange(event,index)} checked={answer.validation} />
                         <label>
                           Réponse {index + 1}:
                           <input id="answer" type="text" value={this.props.questions[this.props.modalPage - 1].answers[index].answer} onChange={(event) => this.props.handleChange(event, index)} />

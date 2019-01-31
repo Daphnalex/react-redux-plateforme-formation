@@ -61,6 +61,18 @@ input[type="checkbox"]:hover{
     cursor: pointer !important;
 }
 
+input[type="radio"]:not(:checked), [type="radio"]:checked{
+    position: absolute !important;
+    left: 25px !important;
+    margin-top: 5px;
+    opacity: 0 !important;
+    z-index: 200;
+}
+
+input[type="radio"]:hover{
+    cursor: pointer !important;
+}
+
 .answers{
     margin-top: 20px;
 }

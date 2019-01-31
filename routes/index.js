@@ -6,8 +6,10 @@ const ctrlUser = require('../controllers/user.controller');
 const ctrlRessource = require('../controllers/ressource.controller');
 const ctrlUpload = require('../controllers/upload.controller');
 
+const sharp = require('sharp');
+const multer  = require('multer');
+const fs = require('fs');
 
-var multer  = require('multer');
 
 var storage = multer.diskStorage({ //multers disk storage settings
     destination: function (req, file, cb) {
@@ -25,9 +27,6 @@ var uploadImage = multer({
             return callback({err:"Le fichier téléchargé doit obligatoirement être une image"})
         }
         callback(null, true)
-    },
-    limits:{
-        fileSize: 1024 * 1024
     }
 }).single('uploadImage');
 
@@ -44,6 +43,7 @@ var uploadVideo = multer({
         fileSize: 50 * 1024 * 1024 //=50Mb
     }
 }).single('uploadVideo');
+
 
 router
     .route('/login')
@@ -81,9 +81,32 @@ router.post('/uploadImage', (req, res) => {
             }
             return res.send({ error: err });
         } else {
-            console.log("req.file",req.file)
-            return res.status(200).send({file: req.file})
+            let image = null;
+            console.log("file",req.file);
+            if (req.file){
+                let app_url = req.headers.origin;
+                console.log("url app",app_url);
+                filename = path.basename(req.file.path);
+                console.log('filename',filename)
+                sharp('./client/public/images/'+filename).resize(800).toFile('./client/public/images/resize_'+filename, (err,info) =>{
+                    if(err) {
+                        throw err
+                    } else {
+                        fs.unlink('./client/public/images/'+filename, (err) => {
+                            if (err) throw err;
+                            console.log('successfully deleted ./client/public/images/'+filename);
+                            return res.status(200).send({file: req.file, resizePath: '/images/resize_'+filename});
+                        });
+                    };
+                    console.log(info);
+                    
+                });
+            }
+            
+            
         }
+        
+       
     })
   });
 
