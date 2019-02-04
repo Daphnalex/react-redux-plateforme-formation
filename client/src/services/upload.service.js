@@ -20,11 +20,3 @@ function addNewUpload(upload){
         return upload
     });
 };
-
-// Handle HTTP errors since fetch won't.
-function handleErrors(response) {
-    if (!response.ok) {
-        throw Error(response.statusText);
-    }
-    return response;
-}

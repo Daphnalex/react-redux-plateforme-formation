@@ -4,6 +4,15 @@ import CKEditor from "react-ckeditor-component";
 
 export default class SupportComponent extends Component {
     
+
+  onBlur(evt){
+    console.log("onBlur event called with event info: ", evt);
+  }
+  
+  afterPaste(evt){
+    console.log("afterPaste event called with event info: ", evt);
+  }
+
   render() {
     return (
         <Row>
@@ -11,11 +20,13 @@ export default class SupportComponent extends Component {
           Support :
         </label>
         <Row>
-          <Col s={4}>
-            <Button className={this.props.supportType === "text" ? "choiceSupport active" : "choiceSupport"} id="text" onClick={(event) => this.props.defineSupport(event)}>Text</Button>
-            <Button className={this.props.supportType === "image" ? "choiceSupport active" : "choiceSupport"} id="image" onClick={(event) => this.props.defineSupport(event)}>Image</Button>
-            <Button className={this.props.supportType === "video" ? "choiceSupport active" : "choiceSupport"} id="video" onClick={(event) => this.props.defineSupport(event)}>Vidéo</Button>
-          </Col>
+          {!this.props.seeRessource &&
+            <Col s={4}>
+              <Button className={this.props.supportType === "text" ? "choiceSupport active" : "choiceSupport"} id="text" onClick={(event) => this.props.defineSupport(event)}>Text</Button>
+              <Button className={this.props.supportType === "image" ? "choiceSupport active" : "choiceSupport"} id="image" onClick={(event) => this.props.defineSupport(event)}>Image</Button>
+              <Button className={this.props.supportType === "video" ? "choiceSupport active" : "choiceSupport"} id="video" onClick={(event) => this.props.defineSupport(event)}>Vidéo</Button>
+            </Col>
+          }
         </Row>
         <Row>
           {(this.props.questions[this.props.modalPage - 1].supportType === "image") &&
@@ -34,21 +45,38 @@ export default class SupportComponent extends Component {
           }
           {(this.props.questions[this.props.modalPage - 1].supportType === "text") &&
             <div>
-              <CKEditor className='editorActive' id={this.props.questions[this.props.modalPage - 1]._id}
-                activeClass="p10"
-                content={this.props.questions[this.props.modalPage - 1].supportPath}
-                events={{
-                  "blur": this.onBlur,
-                  "afterPaste": this.afterPaste,
-                  "change": this.props.handleEditorChange
-                }}
-              />
+              {!this.props.seeRessource ?
+                <div className='editorActive'>
+                  <CKEditor id={this.props.questions[this.props.modalPage - 1]._id}
+                    activeClass="p10"
+                    content={this.props.questions[this.props.modalPage - 1].supportPath}
+                    events={{
+                      "blur": this.onBlur,
+                      "afterPaste": this.afterPaste,
+                      "change": this.props.handleEditorChange
+                    }}
+                  />
+                </div>
+              :
+                <div className='editorDisabled'>
+                  <CKEditor id={this.props.questions[this.props.modalPage - 1]._id}
+                    activeClass="p10"
+                    content={this.props.questions[this.props.modalPage - 1].supportPath}
+                    events={{
+                      "blur": this.onBlur,
+                      "afterPaste": this.afterPaste,
+                      "change": this.props.deleteEditorChange
+                    }}
+                  />
+                </div>
+              }
+              
             </div>
           }
           <br />
           {(this.props.questions[this.props.modalPage - 1].supportType === 'image' && this.props.questions[this.props.modalPage - 1].supportPath !== "") &&
             <div>
-              <img className="supportImage center" src={this.props.questions[this.props.modalPage - 1].supportPath} alt="image support" />
+              <img className="supportImage center" src={this.props.questions[this.props.modalPage - 1].supportPath} alt="support of activity" />
             </div>
           }
           {(this.props.questions[this.props.modalPage - 1].supportType === 'video' && this.props.questions[this.props.modalPage - 1].supportPath !== "") &&

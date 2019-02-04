@@ -22,8 +22,7 @@ const UserSchema = new Schema({
         type: Boolean,
         required: true,
         default: false
-    },
-    _id: Schema.Types.ObjectId
+    }
 });
 
 module.exports = mongoose.model('User',UserSchema);

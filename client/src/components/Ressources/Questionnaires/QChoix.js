@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import { Row, Col, Button } from "react-materialize";
-import Iframe from "react-iframe";
 import './style.css';
 import Support from "./SupportComponent";
 import InfoRessource from "../InfoRessource";
@@ -24,37 +22,60 @@ export default class QCM extends Component {
     return (
       <div>
         {(this.props.modalPage === 0) ?
-          <InfoRessource typeOfRessource={this.props.typeOfRessource} title={this.props.title} description={this.props.description} handleChange={this.props.handleChange} nextQuestion={this.props.nextQuestion}/>
+          <InfoRessource seeRessource={this.props.seeRessource} typeOfRessource={this.props.typeOfRessource} title={this.props.title} description={this.props.description} handleChange={this.props.handleChange} nextQuestion={this.props.nextQuestion}/>
           :
           <form>
-              <ConsigneRessource order={this.props.order} handleChange={this.props.handleChange}/>
-              <Support error={this.props.error} supportType={this.props.supportType} defineSupport={this.props.defineSupport} questions={this.props.questions} modalPage={this.props.modalPage} fileUploadHandler={this.props.fileUploadHandler} fileSelectedHandler={this.props.fileSelectedHandler} selectedFile={this.props.selectedFile} handleEditorChange={this.props.handleEditorChange}/>
+              <ConsigneRessource seeRessource={this.props.seeRessource} order={this.props.order} handleChange={this.props.handleChange}/>
+              <Support deleteEditorChange={this.props.deleteEditorChange} seeRessource={this.props.seeRessource} error={this.props.error} supportType={this.props.supportType} defineSupport={this.props.defineSupport} questions={this.props.questions} modalPage={this.props.modalPage} fileUploadHandler={this.props.fileUploadHandler} fileSelectedHandler={this.props.fileSelectedHandler} selectedFile={this.props.selectedFile} handleEditorChange={this.props.handleEditorChange}/>
               <Row>
                 <label>
                   Question {this.props.modalPage} :
-                  <input id="question" type="text" value={this.props.questions[this.props.modalPage - 1].question} onChange={(event) => this.props.handleChange(event, null)} />
-                </label>
+                  { !this.props.seeRessource ?
+                    <input id="question" type="text" value={this.props.questions[this.props.modalPage - 1].question} onChange={(event) => this.props.handleChange(event, null)} />
+                  :
+                    <div className="question">{this.props.questions[this.props.modalPage - 1].question}</div>
+                  }
+                  </label>
               </Row>
               <Row className="answers"><p>Propositions de réponses :</p>
-                <i>Saisissez vos propositions de réponses et cochez les réponses justes.</i>
+                {!this.props.seeRessource ?
+                   <i>Saisissez vos propositions de réponses et cochez les réponses justes.</i>
+                   :
+                  <i>Cochez la ou les réponses qui vous semblent justes</i>
+                }
+               
                 <br /><br />
                 {(this.props.questions[this.props.modalPage - 1].answers.length > 0)
                   &&
                   <div>
                     {(this.props.questions[this.props.modalPage - 1].answers.map((answer, index) => (
-                      <Row key={index} className='answer'>
-                        <input type={this.props.typeOfRessource === "QCM" ? "checkbox" : "radio"} id="validation" name="validation" onChange={(event) => this.props.handleChange(event,index)} checked={answer.validation} />
-                        <label>
-                          Réponse {index + 1}:
-                          <input id="answer" type="text" value={this.props.questions[this.props.modalPage - 1].answers[index].answer} onChange={(event) => this.props.handleChange(event, index)} />
-                        </label>
-                      </Row>
+                      <div key={index}>
+                        {!this.props.seeRessource ?
+                          <Row className='answer'>
+                            <input type={this.props.typeOfRessource === "QCM" ? "checkbox" : "radio"} id="validation" name="validation" onChange={(event) => this.props.handleChange(event,index)} checked={answer.validation} />
+                            <label>
+                              Réponse {index + 1}:
+                              <input id="answer" type="text" value={this.props.questions[this.props.modalPage - 1].answers[index].answer} onChange={(event) => this.props.handleChange(event, index)} />
+                            </label>
+                        </Row>
+                      :
+                          <Row className='choiceUser'>
+                            <input type={this.props.typeOfRessource === "QCM" ? "checkbox" : "radio"} id="choiceUser" name="choiceUser" onChange={(event) => this.props.handleChange(event,index)} checked={answer.choiceUser} />
+                            <label>
+                              Réponse {index + 1}:
+                              <div>{this.props.questions[this.props.modalPage - 1].answers[index].answer}</div>
+                            </label>
+                          </Row>
+                      }
+                      </div>
                     )))}
                   </div>}
               </Row>
-              <Row>
-                <Button className="addAnswer center" onClick={this.props.addAnswer}>Ajouter une réponse</Button>
-              </Row>
+              {!this.props.seeRessource &&
+                <Row>
+                  <Button className="addAnswer center" onClick={this.props.addAnswer}>Ajouter une réponse</Button>
+                </Row>
+              }
               <Row>
                 {(this.props.modalPage > 0)
                   &&
@@ -66,7 +87,11 @@ export default class QCM extends Component {
                   {(this.props.modalPage === this.props.questions.length)
                     ?
                     <Col s={6} className="btnNext right">
-                      <Button onClick={this.props.nextQuestion}>Ajouter une question</Button>
+                      {!this.props.seeRessource ?
+                        <Button onClick={this.props.nextQuestion}>Ajouter une question</Button>
+                        :
+                        <Button onClick={(event)=>this.props.calculResult(event)}>Valider et obtenir mon résultat</Button>
+                      }
                     </Col>
                     :
                     <Col s={6} className="btnNext right">

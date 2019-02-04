@@ -152,10 +152,19 @@ label {
     text-align: left;
 }
 
+.editorDisabled html:hover{
+    cursor: none !important;
+}
+
 .editorDisabled span.cke_top.cke_reset_all{
     display: none !important;
 }
 
 .editorDisabled span.cke_bottom.cke_reset_all{
     display: none !important;
+}
+
+div.question {
+    font-size: 18px !important;
+    color: black !important;
 }

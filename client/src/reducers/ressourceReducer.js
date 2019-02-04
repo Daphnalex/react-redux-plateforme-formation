@@ -107,14 +107,17 @@ export default function fetchRessourcesReducer(state = initialState, action){
                 loading: true
             }
         case DELETE_ONE_RESSOURCE_SUCCESS:
+            var index;
             state.ressources.map((ressource,i) => {
                 if(ressource._id === action.payload.ressource._id){
-                    state.ressources.splice(i,1)
+                    index = i;
                 }
             })
-            //console.log("after delete",state.ressources)
+            console.log("after delete",index)
+            
             return {
-                ressources: state.ressources,
+                ...state,
+                ressources: [...state.ressources.slice(0,index),...state.ressources.slice(index+1)],
                 loading: false,
                 currentRessource: null
             }

@@ -11,19 +11,19 @@ class AddRessource extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            title: "",
-            description: "",
-            order: "",
-            questions: [],
-            modalPage: 0,
-            typeOfRessource: "",
-            shareRessource: false,
-            author: localStorage.token.username,
-            adding: this.props.adding,
-            supportType: "",
-            selectedFile: null,
-            error: "",
-            activeEditor: false
+            title: "", //general information
+            description: "", //general information
+            order: "", //general information
+            questions: [], //specific to questionnaires
+            modalPage: 0, //general information,
+            typeOfRessource: "",//general information
+            shareRessource: false, //general information - teacher can share ressource with other teacher of the plateform
+            author: localStorage.token.username,//get the author of ressource
+            adding: this.props.adding,//to differenciation an adding of ressource to the edition of ressource
+            supportType: "", //general information for ressource having a support
+            selectedFile: "", //define if support is a text, an image or a video
+            error: "", //error to upload support
+            activeEditor: false,
         }
         this.defineSupport = this.defineSupport.bind(this);
         this.fileUploadHandler = this.fileUploadHandler.bind(this);
@@ -31,53 +31,9 @@ class AddRessource extends Component {
         this.handleEditorChange = this.handleEditorChange.bind(this);
     }
 
-    handleChange = (event, index) => {
-        //event.preventDefault();
-        let newQuestions = Object.assign({}, this.state.questions);
+    // --------------------- FUNCTIONING OF THE MODAL -----------------------------
 
-
-        switch (event.target.id) {
-            case 'answer':
-                //change the state of answer according to his index
-                newQuestions[this.state.modalPage - 1].answers[index].answer = event.target.value;
-                this.setState({
-                    newQuestions
-                });
-                break;
-            case 'question':
-                //change the state of answer according to his index
-                newQuestions[this.state.modalPage - 1].question = event.target.value;
-                this.setState({
-                    newQuestions
-                });
-                break;
-            case 'validation':
-                console.log('event', event.target);
-                console.log('index', index)
-                if (event.target.type === "radio") {
-                    for (let i = 0; i < newQuestions[this.state.modalPage - 1].answers.length; i++) {
-                        newQuestions[this.state.modalPage - 1].answers[i].validation = false;
-                    }
-                }
-                newQuestions[this.state.modalPage - 1].answers[index].validation = event.target.checked;
-                console.log(newQuestions[this.state.modalPage - 1].answers);
-                this.setState({
-                    newQuestions
-                });
-                break;
-            case 'shareRessource':
-                newQuestions[this.state.modalPage - 1].answers[index].shareRessource = event.target.checked;
-                this.setState({
-                    newQuestions
-                });
-                break;
-            default:
-                this.setState({
-                    [event.target.id]: event.target.value
-                });
-        }
-    }
-
+    //in modal this function allows to go to the next question
     nextQuestion = (event) => {
         event.preventDefault();
         console.log(this.state.modalPage);
@@ -112,6 +68,7 @@ class AddRessource extends Component {
         }
     }
 
+    //in modal this function allows to go to the previous question
     previousQuestion = (event) => {
         event.preventDefault();
         this.setState({
@@ -120,28 +77,7 @@ class AddRessource extends Component {
         })
     }
 
-    addAnswer = (event) => {
-        event.preventDefault();
-        //We prepare new answer to the current question
-        let newQuestions = Object.assign([{}], this.state.questions);
-        let newAnswers = newQuestions[this.state.modalPage - 1].answers;
-        newAnswers = [...newAnswers, {
-            answer: "",
-            validation: false
-        }]
-        newQuestions[this.state.modalPage - 1].answers = newAnswers;
-        this.setState({
-            questions: newQuestions
-        })
-    }
-
-    selectTypeOfRessource = (event) => {
-        event.preventDefault();
-        this.setState({
-            typeOfRessource: event.target.id
-        })
-    }
-
+    //this function allows to cancel our current activity and close modal
     cancelModal = () => {
         this.setState({
             title: "",
@@ -162,6 +98,7 @@ class AddRessource extends Component {
         });
     }
 
+    //this function allows to save our current activity and close modal
     saveModal = () => {
         var ressource = {
             title: this.state.title,
@@ -180,7 +117,116 @@ class AddRessource extends Component {
             window.$('.modal').modal('close');
         });
     }
+    //------------------------------------------------------------------------------
 
+    //-------------------- SPECIFIC TO ACTIVITY WITH SUPPORT ------------------------
+    //this function recover the type of support
+    defineSupport = (event) => {
+        event.preventDefault();
+        let newQuestions = Object.assign([], this.state.questions);
+        newQuestions[this.state.modalPage - 1].supportType = event.target.id;
+        console.log('choice', event.target.id);
+        this.setState({
+            supportType: event.target.id,
+            questions: newQuestions
+        });
+        if (event.target.id === "text") {
+            this.setState({
+                activeEditor: true
+            })
+        }
+    }
+    // ------------------------------------------------------------------------------
+
+    //-------------------------- SPECIFIC TO QUESTIONNAIRES -------------------------
+    
+    //save informations the teacher write in the input of activity
+    handleChange = (event, index) => {
+        //event.preventDefault();
+        let newQuestions = Object.assign({}, this.state.questions);
+        switch (event.target.id) {
+            case 'answer':
+                //change the state of answer according to his index
+                newQuestions[this.state.modalPage - 1].answers[index].answer = event.target.value;
+                this.setState({
+                    newQuestions
+                });
+                break;
+            case 'question':
+                //change the state of answer according to his index
+                newQuestions[this.state.modalPage - 1].question = event.target.value;
+                this.setState({
+                    newQuestions
+                });
+                break;
+            case 'validation':
+                console.log('event', event.target);
+                console.log('index', index)
+                if (event.target.type === "radio") {
+                    for (let i = 0; i < newQuestions[this.state.modalPage - 1].answers.length; i++) {
+                        newQuestions[this.state.modalPage - 1].answers[i].validation = false;
+                    }
+                }
+                newQuestions[this.state.modalPage - 1].answers[index].validation = event.target.checked;
+                console.log(newQuestions[this.state.modalPage - 1].answers);
+                this.setState({
+                    newQuestions
+                });
+                break;
+            case 'choiceUser':
+                console.log('event', event.target);
+                console.log('index', index)
+                if (event.target.type === "radio") {
+                    for (let i = 0; i < newQuestions[this.state.modalPage - 1].answers.length; i++) {
+                        newQuestions[this.state.modalPage - 1].answers[i].validation = false;
+                    }
+                }
+                newQuestions[this.state.modalPage - 1].answers[index].choiceUser = event.target.checked;
+                console.log(newQuestions[this.state.modalPage - 1].answers);
+                this.setState({
+                    newQuestions
+                });
+                break;
+            case 'shareRessource':
+                newQuestions[this.state.modalPage - 1].answers[index].shareRessource = event.target.checked;
+                this.setState({
+                    newQuestions
+                });
+                break;
+            default:
+                this.setState({
+                    [event.target.id]: event.target.value
+                });
+        }
+    }
+    
+    //this function allows to add a new answer for our question
+    addAnswer = (event) => {
+        event.preventDefault();
+        //We prepare new answer to the current question
+        let newQuestions = Object.assign([{}], this.state.questions);
+        let newAnswers = newQuestions[this.state.modalPage - 1].answers;
+        newAnswers = [...newAnswers, {
+            answer: "",
+            validation: false,
+            choiceUser: false
+        }]
+        newQuestions[this.state.modalPage - 1].answers = newAnswers;
+        this.setState({
+            questions: newQuestions
+        })
+    }
+
+    //choice the type of ressource we add
+    selectTypeOfRessource = (event) => {
+        event.preventDefault();
+        this.setState({
+            typeOfRessource: event.target.id
+        })
+    }
+
+    // ------------------------- SPECIFIC TO UPLOAD FILE ----------------------------
+    //this function is to manage the upload of image or video to support of activity
     fileUploadHandler = (event) => {
         event.preventDefault();
         const fd = new FormData();
@@ -253,36 +299,26 @@ class AddRessource extends Component {
                     console.log('err', err);
                 });
                 break;
+            default:
+                this.setState({
+                    questions: this.state.questions
+                })
         }
     }
 
-    defineSupport = (event) => {
-        event.preventDefault();
-        let newQuestions = Object.assign([], this.state.questions);
-        newQuestions[this.state.modalPage - 1].supportType = event.target.id;
-        console.log('choice', event.target.id);
-        this.setState({
-            supportType: event.target.id,
-            questions: newQuestions
-        });
-        if (event.target.id === "text") {
-            this.setState({
-                activeEditor: true
-            })
-        }
-    }
-
-
+    //to upload file we recover the file selected in input with file type
     fileSelectedHandler = (event) => {
         event.preventDefault();
         console.log('choice', event.target.files[0]);
-        var value = event.target.files[0];
         console.log('value selectedFile', event.target.files[0]);
         this.setState({
             selectedFile: event.target.files[0]
         })
     }
+    // ------------------------------------------------------------------------------
 
+    // ------------------------- SPECIFIC TO CKEDITOR -------------------------------
+    //we recover the content of editor
     handleEditorChange = (event) => {
         console.log("onChange fired with event info: ", event);
         var newContent = event.editor.getData();
@@ -294,6 +330,7 @@ class AddRessource extends Component {
             newQuestions
         })
     }
+    // ------------------------------------------------------------------------------
 
     render() {
         return (
