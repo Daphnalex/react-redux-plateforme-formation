@@ -292,6 +292,7 @@ class ListRessource extends Component {
         });
     }
 
+    //training mode for resource : calcul result of user at the end of resource
     calculResult = (event) => {
         event.preventDefault();
         var score = 0;
@@ -330,6 +331,7 @@ class ListRessource extends Component {
         const fd = new FormData();
         console.log('avant switch', this.state.supportType);
         switch (this.state.supportType) {
+            //upload image
             case ("image"):
                 fd.append('uploadImage', this.state.selectedFile, this.state.selectedFile.name);
                 axios.post('http://localhost:5001/api/uploadImage', fd, {
@@ -357,6 +359,7 @@ class ListRessource extends Component {
                     console.log('err', err);
                 });
                 break;
+            //upload video
             case ('video'):
                 fd.append('uploadVideo', this.state.selectedFile, this.state.selectedFile.name);
                 axios.post('http://localhost:5001/api/uploadVideo', fd, {

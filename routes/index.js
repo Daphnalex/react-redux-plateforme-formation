@@ -5,7 +5,7 @@ const path = require('path');
 const ctrlUser = require('../controllers/user.controller');
 const ctrlRessource = require('../controllers/ressource.controller');
 const ctrlUpload = require('../controllers/upload.controller');
-
+const ctrlClassSchool = require('../controllers/classSchool.controller');
 const sharp = require('sharp');
 const multer  = require('multer');
 const fs = require('fs');
@@ -44,6 +44,9 @@ var uploadVideo = multer({
     }
 }).single('uploadVideo');
 
+router
+    .route('/register')
+    .post(ctrlUser.register)
 
 router
     .route('/login')
@@ -51,7 +54,6 @@ router
 
 router
     .route('/users')
-    .post(ctrlUser.userAddOne)
     .get(ctrlUser.userGetAll);
 
 router
@@ -69,6 +71,11 @@ router
     .get(ctrlRessource.ressourceGetOne)
     .put(ctrlRessource.ressourceUpdateOne)
     .delete(ctrlRessource.ressourceDeleteOne);
+
+router
+    .route('/classes')
+    .get(ctrlClassSchool.classGetAll)
+    .post(ctrlClassSchool.classAddOne);
 
 router.post('/uploadImage', (req, res) => {
     uploadImage(req, res, (err) => {

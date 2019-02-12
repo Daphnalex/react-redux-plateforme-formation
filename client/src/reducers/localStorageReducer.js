@@ -3,13 +3,17 @@ import {
     LOGIN_USER_SUCCESS,
     LOGIN_USER_FAILURE,
     LOGIN_EDIT_INPUT,
-    LOGOUT_USER
+    LOGOUT_USER,
+    GET_USER_BEGIN,
+    GET_USER_SUCCESS,
+    GET_USER_FAILURE
 } from "../actions/userActions.js";
 
 const localStorageInitialState = {
     token: localStorage.getItem("token"),
     loading: false,
-    error: null
+    error: null,
+    currentUser: null
 }
 
 export default function loginUserReducer(state = localStorageInitialState, action){
@@ -47,6 +51,24 @@ export default function loginUserReducer(state = localStorageInitialState, actio
                 loading: false,
                 error: null,
                 token: null
+            }
+        case GET_USER_BEGIN:
+            return {
+                ...state,
+                loading: true,
+                error: null
+            }
+        case GET_USER_SUCCESS: 
+            return {
+                ...state,
+                loading: false,
+                currentUser: action.payload.currentUser
+            }
+        case GET_USER_FAILURE:
+            return {
+                ...state,
+                loading: false,
+                error: null
             }
         default: 
             return state;

@@ -34,30 +34,35 @@ class Login extends Component {
     }
 
     render() {
-
         return (
-            <div className="Login">
-                <Card className='small'
-                    header={<CardTitle image={Logo}></CardTitle>}
-                >
-                    <Row className="login-form">
-                        <Col s={12}>
-                            <Col s={1}></Col>
-                            <Input s={10} id="username" label="Username" onChange={(event) => this.handleChange(event)} value={this.state.username}  validate><Icon>account_circle</Icon></Input>
-                        </Col>
-                        <Col s={12}>
-                            <Col s={1}></Col>
-                            <Input s={10} id="password" label="Mot de passe" onChange={(event) => this.handleChange(event)}  value={this.state.password} validate type='password'><Icon>vpn_key</Icon></Input><br/>
-                        </Col>
-                        <Col s={12}>
-                            {(this.props.localStorage.error)&&<Row className="error">Nom d'utilisateur ou mot de passe incorrect</Row>}
-                        </Col>
-                    </Row>
-                    <Row className="validateButton">
-                        <Button onClick={(event) => this.handleSubmit(event)}  waves='light'>Se connecter</Button>
-                    </Row>
-                </Card>
-            </div>
+            <Row>
+                
+                <Row className="Login">
+                    <Card className='small'
+                        header={<CardTitle image={Logo}></CardTitle>}
+                    >
+                        <Row className="login-form">
+                            <Col s={12}>
+                                <Col s={1}></Col>
+                                <Input s={10} id="username" label="Nom d'utilisateur" onChange={(event) => this.handleChange(event)} value={this.state.username}  validate><Icon>account_circle</Icon></Input>
+                            </Col>
+                            <Col s={12}>
+                                <Col s={1}></Col>
+                                <Input s={10} id="password" label="Mot de passe" onChange={(event) => this.handleChange(event)}  value={this.state.password} validate type='password'><Icon>vpn_key</Icon></Input><br/>
+                            </Col>
+                            <Col s={12}>
+                                {(this.props.localStorage.error)&&<Row className="error">{this.props.localStorage.error}</Row>}
+                            </Col>
+                        </Row>
+                        <Row className="validateButton">
+                            <Button onClick={(event) => this.handleSubmit(event)}  waves='light'>Se connecter</Button>
+                        </Row>
+                        <Row className='linkRegister'>
+                            <a href="/register">S'enregistrer</a>
+                        </Row>
+                    </Card>
+                </Row>
+            </Row>
         );
     }
 }
@@ -65,7 +70,8 @@ class Login extends Component {
 const mapStateToProps = (state) => {
     console.log('mapStateToProps', state)
     return ({
-        localStorage: state.localStorage
+        localStorage: state.localStorage,
+        users: state.users
     })
 }
 

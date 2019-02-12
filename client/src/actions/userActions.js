@@ -17,6 +17,20 @@ import jwtDecode from 'jwt-decode';
 //     };
 // };
 
+export function getCurrentUser(token) {
+    return dispatch => {
+        dispatch(getCurrentUserBegin());
+        if (token) {
+            var currentUser = jwtDecode(token);
+            console.log('currentUser',currentUser)
+            dispatch(getCurrentUserSuccess(currentUser));
+        } else {
+            var error = "Token non reçu"
+            dispatch(getCurrentUserFailure(error))
+        }
+    }
+}
+
 export function loginUser(username, password) {
     return dispatch => {
         dispatch(loginUserBegin());
@@ -24,11 +38,15 @@ export function loginUser(username, password) {
             .then(
                 user => {
                     console.log('ici',user)
-                    if (user){
+                    if (user.token){
+                        console.log('un token')
                         var token = jwtDecode(user.token);
                         console.log('token decrypt',token)
                         dispatch(loginUserSuccess(token));
                         history.push('/')
+                    } else {
+                        console.log('user token is null',user)
+                        dispatch(loginUserFailure(user));
                     }
                 },
                 error => {
@@ -40,6 +58,32 @@ export function loginUser(username, password) {
     }
 }
 
+export function registerUser(user) {
+    console.log('user in action register',user);
+    return dispatch => {
+        dispatch(registerUserBegin());
+        userService.registerUser(user)
+            .then(user => {
+                console.log('user',user);
+                var message = "Utilisateur créé avec succès";
+               dispatch(registerUserSuccess(user,message));
+            },
+            error => {
+                console.log('error in user action',error)
+                dispatch(registerUserFailure(error));
+                history.push('/register');
+            }
+        )
+    }
+}
+
+export function endRegisterUser(){
+    return dispatch => {
+        dispatch(endRegisterSuccess());
+        history.push('/login')
+    }
+}
+
 export function logoutUser(){
     console.log('logout action')
     return dispatch => {
@@ -48,11 +92,13 @@ export function logoutUser(){
     }
 }
 
+
 export function editInputUser(){
     return dispatch => {
         dispatch(editInput())
     }
 }
+
 
 export const FETCH_USERS_BEGIN = "FETCH_USERS_BEGIN";
 export const FETCH_USERS_SUCCESS = "FETCH_USERS_SUCCESS";
@@ -63,14 +109,31 @@ export const fetchUsersBegin = () => ({
 });
 
 export const fetchUsersSuccess = (users) => ({
-    type: FETCH_USERS_SUCCESS,
-    payload: { users: this.fetchUsers() }
+    type: FETCH_USERS_SUCCESS
 });
 
 export const fetchUsersFailure = (error) => ({
     type: FETCH_USERS_FAILURE,
     payload: { error }
 });
+
+export const GET_USER_BEGIN = "GET_USER_BEGIN";
+export const GET_USER_SUCCESS = "GET_USER_SUCCESS";
+export const GET_USER_FAILURE = "GET_USER_FAILURE";
+
+export const getCurrentUserBegin = () => ({
+    type: GET_USER_BEGIN
+});
+
+export const getCurrentUserSuccess = (currentUser) => ({
+    type: GET_USER_SUCCESS,
+    payload: { currentUser }
+})
+
+export const getCurrentUserFailure = (error) => ({
+    type: GET_USER_FAILURE,
+    payload: { error }
+})
 
 
 export const LOGIN_USER_BEGIN = "LOGIN_USER_BEGIN";
@@ -100,3 +163,26 @@ export const logoutUserSuccess = () => ({
 export const editInput = () => ({
     type: LOGIN_EDIT_INPUT
 });
+
+export const REGISTER_USER_BEGIN = "REGISTER_USER_BEGIN";
+export const REGISTER_USER_SUCCESS = "REGISTER_USER_SUCCESS";
+export const REGISTER_USER_FAILURE = "REGISTER_USER_FAILURE";
+export const END_REGISTER_USER = "END_REGISTER_USER";
+
+export const registerUserBegin = () => ({
+    type: REGISTER_USER_BEGIN
+});
+
+export const registerUserSuccess = (user,message) => ({
+    type: REGISTER_USER_SUCCESS,
+    payload: {user: user, message: message}
+});
+
+export const registerUserFailure = (error) => ({
+    type: REGISTER_USER_FAILURE,
+    payload: {error}
+});
+
+export const endRegisterSuccess = () => ({
+    type: END_REGISTER_USER
+})

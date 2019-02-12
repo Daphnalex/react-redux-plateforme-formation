@@ -5,15 +5,21 @@ const keys = require('../config/keys');
 
 var User = require('../models/users');
 
-module.exports.userAddOne = (req,res) => {
+module.exports.register = (req,res) => {
     console.log('add user',req.body);
     const newUser = new User({
         username: req.body.username,
         password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10)),
-        profile: req.body.profile,
+        profile: req.body.profileUser,
         email: req.body.email
     })
-    newUser.save().then(user => res.json(user)).catch(err => res.status(404).json(err));
+    newUser.save().then(user => res.json(user)).catch(err => {
+        console.log('error',err);
+        if (err.code === 11000){
+            var message = "Nom d'utilisateur déjà existant";
+        }
+        res.status(409).json({message: message});
+    });
 }
 
 module.exports.userUpdateOne = (req,res) => {

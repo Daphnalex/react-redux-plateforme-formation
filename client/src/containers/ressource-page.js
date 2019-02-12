@@ -13,12 +13,6 @@ class Ressources extends Component {
         }
     }
 
-    componentWillReceiveProps(nextProps){
-        //console.log('nextprops index',nextProps);
-    }
-
-    
-
     render() {
         //console.log('index render',this.props.currentRessource)
         return (

@@ -160,6 +160,7 @@ class AddRessource extends Component {
                 });
                 break;
             case 'validation':
+                //for questionnaire - mode creation or edition : if response is checked validation is true else it is false
                 console.log('event', event.target);
                 console.log('index', index)
                 if (event.target.type === "radio") {
@@ -174,6 +175,7 @@ class AddRessource extends Component {
                 });
                 break;
             case 'choiceUser':
+                //for questionnaire - training mode : when user checked response validation is true else it is false
                 console.log('event', event.target);
                 console.log('index', index)
                 if (event.target.type === "radio") {
@@ -188,6 +190,7 @@ class AddRessource extends Component {
                 });
                 break;
             case 'shareRessource':
+                //when user creator click to "Partager ressource" the resource is public for all teachers
                 newQuestions[this.state.modalPage - 1].answers[index].shareRessource = event.target.checked;
                 this.setState({
                     newQuestions
@@ -232,6 +235,7 @@ class AddRessource extends Component {
         const fd = new FormData();
         console.log('avant switch', this.state.supportType);
         switch (this.state.supportType) {
+            //upload image
             case ("image"):
                 fd.append('uploadImage', this.state.selectedFile, this.state.selectedFile.name);
                 axios.post('http://localhost:5001/api/uploadImage', fd, {
@@ -265,6 +269,7 @@ class AddRessource extends Component {
                     console.log('err', err);
                 });
                 break;
+            //upload video
             case ('video'):
                 console.log('video')
                 fd.append('uploadVideo', this.state.selectedFile, this.state.selectedFile.name);
@@ -343,7 +348,7 @@ class AddRessource extends Component {
                                 <Col s={6} className="left">
                                     <Button onClick={(event) => this.cancelModal(event)}>
                                         Annuler
-                        </Button>
+                                    </Button>
                                 </Col>
                                 <Col s={6} className="right">
                                     {
@@ -353,7 +358,7 @@ class AddRessource extends Component {
                                             <input type="radio" id="shareRessource" name="shareRessource" onChange={(event) => this.props.handleChange(event, null)} checked={this.state.shareRessource} />
                                             <label>
                                                 Partager cette ressource
-                                    </label>
+                                            </label>
                                             <Button onClick={(event) => this.saveModal(event)}>
                                                 <i className="material-icons">exit_to_app</i>
                                                 Enregistrer

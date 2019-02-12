@@ -79,3 +79,8 @@ div.input-field{
   color: red;
   text-align: center;
 }
+
+.linkRegister {
+  text-align: center;
+  font-style: italic;
+}
