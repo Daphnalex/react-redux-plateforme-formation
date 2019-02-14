@@ -2,6 +2,7 @@
 React/Redux/NodeJS/Express/Mongoose
 
 --------- PLATEFORME PEDAGOGIQUE ----------------
+
 Objectif : 
 Création d'une plateforme permettant de créer des séquences pédagogiques à destination de ces élèves.
 
@@ -9,7 +10,7 @@ Etat actuel :
 - Vue enseignant
 - Possibilité de créer des ressources pédagogiques de type :
   -> QCM : Questionnaires à choix multiples
-  -> QCU : Questionnaires à choix uniques
+  -> QCU : Questionnaires à choix unique
  
  A venir :
  1. Possibilité de créer des séquences pédagogiques.
