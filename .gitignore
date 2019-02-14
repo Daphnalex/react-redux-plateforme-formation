@@ -1,4 +1,4 @@
-/node_modules
-config/*
+back/config/*
 client/node_modules
 client/public
+back/node_modules
